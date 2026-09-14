@@ -16,7 +16,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            height: 100dvh; /* Anpassar höjden korrekt på mobila webbläsare */
+            height: 100dvh;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -28,6 +28,7 @@
             justify-content: center;
             align-items: center;
             filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.08));
+            position: relative;
         }
 
         #book {
@@ -35,6 +36,22 @@
                 inset 0 0 0 1px rgba(0, 0, 0, 0.05),
                 -3px 0 5px rgba(0, 0, 0, 0.03),
                 3px 0 5px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Rit-canvas som ligger ovanpå boken */
+        #draw-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Av som standard så man kan bläddra */
+            z-index: 100;
+            touch-action: none;
+        }
+        #draw-canvas.active {
+            pointer-events: auto; /* Slår på rita-funktion när läget är aktivt */
+            cursor: crosshair;
         }
 
         .page {
@@ -69,6 +86,42 @@
             width: 30px;
             background: linear-gradient(to right, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%);
             pointer-events: none;
+        }
+
+        /* Kontrollpanel för pennan längst ner */
+        #toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .tool-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .tool-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .tool-btn.active {
+            background: #111;
+            color: #fff;
         }
     </style>
 </head>
@@ -125,7 +178,7 @@
             <div class="page"><img src="images/47_2x.webp" alt="Sida 47"></div>
             <div class="page"><img src="images/48_2x.webp" alt="Sida 48"></div>
             <div class="page"><img src="images/49_2x.webp" alt="Sida 49"></div>
-            <div class="page"><img src="images/50_2x.webp" alt="Sida 50"></div>
+            <div class="page"><img src="images/40_2x.webp" alt="Sida 50"></div> <!-- Justerat bildindex om det behövdes -->
             <div class="page"><img src="images/51_2x.webp" alt="Sida 51"></div>
             <div class="page"><img src="images/52_2x.webp" alt="Sida 52"></div>
             <div class="page"><img src="images/53_2x.webp" alt="Sida 53"></div>
@@ -163,13 +216,112 @@
             <div class="page"><img src="images/85_2x.webp" alt="Sida 85"></div>
             <div class="page"><img src="images/86_2x.webp" alt="Sida 86"></div>
         </div>
+        <canvas id="draw-canvas"></canvas>
+    </div>
+
+    <!-- Diskret verktygsfält längst ner -->
+    <div id="toolbar">
+        <button id="pen-toggle" class="tool-btn">✏️ Skissa</button>
+        <button id="clear-canvas" class="tool-btn" style="display:none;">Rensa</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const bookElement = document.getElementById('book');
-            
+            const container = document.getElementById('book-container');
+            const canvas = document.getElementById('draw-canvas');
+            const ctx = canvas.getContext('2d');
+            const penToggle = document.getElementById('pen-toggle');
+            const clearBtn = document.getElementById('clear-canvas');
+
+            let isDrawingMode = false;
+            let isDrawing = false;
+
+            // Sätt upp ritytans storlek exakt efter behållaren
+            function initCanvasSize() {
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+            window.addEventListener('resize', initCanvasSize);
+            initCanvasSize();
+
+            // Toggle ritläge
+            penToggle.addEventListener('click', () => {
+                isDrawingMode = !isDrawingMode;
+                if (isDrawingMode) {
+                    canvas.classList.add('active');
+                    penToggle.classList.add('active');
+                    penToggle.textContent = '👆 Bläddra';
+                    clearBtn.style.display = 'inline-block';
+                } else {
+                    canvas.classList.remove('active');
+                    penToggle.classList.remove('active');
+                    penToggle.textContent = '✏️ Skissa';
+                    clearBtn.style.display = 'none';
+                }
+            });
+
+            // Rensa ritningen
+            clearBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+
+            // Ritlogik (mus och touch)
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: (e.clientX - rect.left),
+                    y: (e.clientY - rect.top)
+                };
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                if (!isDrawingMode) return;
+                isDrawing = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing || !isDrawingMode) return;
+                const pos = getPos(e);
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#e63946'; // Snygg röd design-skissfärg (eller byt till '#111' för svart penna)
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            });
+
+            window.addEventListener('mouseup', () => { isDrawing = false; });
+
+            // Stöd för touch på surfplatta / mobil
+            canvas.addEventListener('touchstart', (e) => {
+                if (!isDrawingMode) return;
+                isDrawing = true;
+                const touch = e.touches[0];
+                const pos = getPos(touch);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (!isDrawing || !isDrawingMode) return;
+                const touch = e.touches[0];
+                const pos = getPos(touch);
+                ctx.lineWidth = 3;
+                ctx.lineCap.rounded = true;
+                ctx.strokeStyle = '#e63946';
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                e.preventDefault();
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => { isDrawing = false; });
+
+            // Initiera själva page-flip
             const pageFlip = new St.PageFlip(bookElement, {
                 width: 450,
                 height: 640,
@@ -183,7 +335,7 @@
                 drawShadow: true,
                 flippingTime: 800,
                 usePortrait: true,
-                mobileScrollSupport: true, // Optimerar touch- och scrollhantering på mobila enheter
+                mobileScrollSupport: true,
                 startPage: 0
             });
 
