@@ -36,7 +36,7 @@
 <body>
 
     <div id="book">
-        <!-- Sidor 1 till 86 -->
+        <!-- Sidor 1 till 86 (Stående A4) -->
         <div class="page"><img src="images/1.jpg" alt="Sida 1"></div>
         <div class="page"><img src="images/2.jpg" alt="Sida 2"></div>
         <div class="page"><img src="images/3.jpg" alt="Sida 3"></div>
@@ -140,13 +140,13 @@
             const pageFlip = new St.PageFlip(
                 document.getElementById("book"),
                 {
-                    width: 700,  
-                    height: 500, 
+                    width: 450,  // Stående A4-bredd
+                    height: 636, // Stående A4-höjd (proportion 1:1.414)
                     size: "stretch",
                     minWidth: 300,
-                    maxWidth: 1200,
-                    minHeight: 200,
-                    maxHeight: 900,
+                    maxWidth: 1000,
+                    minHeight: 400,
+                    maxHeight: 1400,
                     maxShadowOpacity: 0.5,
                     showCover: true,
                     mobileScrollSupport: false
