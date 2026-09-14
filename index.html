@@ -11,7 +11,7 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #f7f7f8; /* Mycket mjukt benvit/ljusgrå tone för kontrast */
+            background-color: #f7f7f8;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,9 +26,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Mjuk skugga som får magasinet att lyfta från ytan */
+            /* Mjuk skugga runt hela boken */
             filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.08));
         }
+
+        #book {
+            /* Skapar illusionen av sidblock / papperstjocklek i ytterkanterna */
+            box-shadow: 
+                inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+                /* Vänster och höger "papperskant" */
+                -3px 0 5px rgba(0, 0, 0, 0.03),
+                3px 0 5px rgba(0, 0, 0, 0.03);
+        }
+
         .page {
             background-color: #ffffff;
             overflow: hidden;
@@ -42,7 +52,7 @@
             display: block;
         }
         
-        /* Skapa ryggvecks-effekt i mitten av uppslaget */
+        /* Ryggvecks-effekt i mitten av uppslaget */
         .page--left::after {
             content: "";
             position: absolute;
@@ -174,7 +184,7 @@
                 maxShadowOpacity: 0.4,
                 showCover: true,
                 drawShadow: true,
-                flippingTime: 800, /* Lite mjukare/trögare bläddringsrörelse */
+                flippingTime: 800,
                 usePortrait: true,
                 startPage: 0
             });
