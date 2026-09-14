@@ -9,7 +9,7 @@
     <style>
         body {
             margin: 0;
-            background-color: #161616; /* Mörk, exklusiv bakgrundston */
+            background-color: #161616; /* Mörk bakgrundston */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -29,14 +29,14 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            pointer-events: none; /* Gör så att man inte kan klicka/dra i själva bilderna */
+            pointer-events: none; /* Förhindrar klick och drag på bilderna */
         }
     </style>
 </head>
 <body>
 
     <div id="book">
-        <!-- Sidor 1 till 86 (Stående A4: 595x842) -->
+        <!-- Sidor 1 till 86 (Enskilda stående A4-sidor) -->
         <div class="page"><img src="images/1.jpg" alt="Sida 1"></div>
         <div class="page"><img src="images/2.jpg" alt="Sida 2"></div>
         <div class="page"><img src="images/3.jpg" alt="Sida 3"></div>
@@ -112,6 +112,7 @@
         <div class="page"><img src="images/73.jpg" alt="Sida 73"></div>
         <div class="page"><img src="images/74.jpg" alt="Sida 74"></div>
         <div class="page"><img src="images/75.jpg" alt="Sida 75"></div>
+        <div class="page"><img src="pages/76.jpg" alt="Sida 76"></div> <!-- Säkerställ att mappen heter images/76.jpg -->
         <div class="page"><img src="images/76.jpg" alt="Sida 76"></div>
         <div class="page"><img src="images/77.jpg" alt="Sida 77"></div>
         <div class="page"><img src="images/78.jpg" alt="Sida 78"></div>
@@ -126,29 +127,23 @@
     </div>
 
     <script>
-        // Stoppa högerklick på hela sidan
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // Stoppa dragning av element
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-        });
+        // Stoppa högerklick och dragning
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('dragstart', function(e) { e.preventDefault(); });
 
         document.addEventListener("DOMContentLoaded", function () {
             const pageFlip = new St.PageFlip(
                 document.getElementById("book"),
                 {
-                    width: 595,  // Exakt stående A4-bredd
-                    height: 842, // Exakt stående A4-höjd
+                    width: 595,  // Enskild A4-bredd
+                    height: 842, // Enskild A4-höjd
                     size: "stretch",
                     minWidth: 300,
                     maxWidth: 1200,
                     minHeight: 400,
                     maxHeight: 1600,
                     maxShadowOpacity: 0.5,
-                    showCover: true,
+                    showCover: true, // Första sidan blir separat framsida
                     mobileScrollSupport: false
                 }
             );
