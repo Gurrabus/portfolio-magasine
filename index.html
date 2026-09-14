@@ -29,8 +29,8 @@
             cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><path d='M0 0l0 12.012 3.504-3.504 2.502 4.004 2.002-1.002-2.502-4.004 4.504 0L0 0z' fill='%23000'/><path d='M1 2l0 8.598 2.502-2.502 2.502 4.002 1.002-0.502-2.502-4.002 3.502 0L1 2z' fill='%23fff'/></svg>") 0 0, auto;
         }
 
-        /* Autentisk Windows 95 Pixel-art Hand (exakt som din bild) för knappar och aktivt läge */
-        button, .tool-btn, #draw-canvas.active {
+        /* Windows 95 Pixel-art Hand för klickbara element */
+        button, .tool-btn, #pencil-tool, #clear-canvas {
             cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><path d='M5 0h2v1H5V0zm3 1h1v1H8V1zm1 1h1v1H9V2zm1 1h1v1h-1V3zm1 1h1v1h-1V4zm1 1h1v7H12V5h1zm-1 8h-1v1H5v-1H4v-1H3v-1H2v-1H1v-1H0V5h1v1h1v1h1v1h1v1h1V5h1V2h1v3h1V2h1v3h1V2h1v3h1v7z' fill='%23000'/><path d='M6 1h1v4H6V1zm2 1h1v3H8V2zm1 1h1v2H9V3zm1 1h1v1h-1V4zm1 1h1v6H11V5zm-1 7H6v1h4v-1zM5 6H4V5H3V4H2V3H1v2h1v1h1v1h1v1h1V6zm0 2H4v1h1V8zm1 1h1v1H6V9zm1 1h1v1H7v-1z' fill='%23fff'/></svg>") 5 0, pointer !important;
         }
 
@@ -65,6 +65,8 @@
         }
         #draw-canvas.active {
             pointer-events: auto;
+            /* Förändrar pekaren till ett skiss-hårkors/penna när man ritar */
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><circle cx='10' cy='10' r='3' fill='none' stroke='%23e63946' stroke-width='2'/><line x1='10' y1='0' x2='10' y2='20' stroke='%23e63946' stroke-width='1'/><line x1='0' y1='10' x2='20' y2='10' stroke='%23e63946' stroke-width='1'/></svg>") 10 10, crosshair !important;
         }
 
         .page {
@@ -101,12 +103,34 @@
             pointer-events: none;
         }
 
-        /* Windows 95 / MS Paint-inspirerat verktygsfält */
+        /* Interaktiv blyertspenna som ligger på skrivbordet till höger om boken */
+        #pencil-tool {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%) rotate(25deg);
+            z-index: 1000;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+            filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.15));
+        }
+        #pencil-tool:hover {
+            transform: translateY(-55%) rotate(22deg) scale(1.05);
+            filter: drop-shadow(6px 12px 18px rgba(0,0,0,0.22));
+        }
+        /* När pennan är "upplockad" och aktiv */
+        #pencil-tool.active {
+            transform: translateY(-50%) rotate(-10deg) scale(1.12);
+            filter: drop-shadow(10px 20px 25px rgba(230,57,70,0.3));
+        }
+
+        /* Win95 / Paint-verktygsfält för "Clear"-knappen nere till vänster */
         #toolbar {
             position: fixed;
             bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 32px;
             z-index: 1000;
             display: flex;
             gap: 6px;
@@ -117,6 +141,7 @@
             border-right: 2px solid #404040;
             border-bottom: 2px solid #404040;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            display: none; /* Dold tills man tar upp pennan */
         }
 
         .tool-btn {
@@ -131,21 +156,32 @@
             font-weight: bold;
             color: #000000;
             outline: none;
-            transition: none;
         }
-
-        .tool-btn:hover {
-            background: #c0c0c0;
-        }
-
-        /* Intryckt effekt när knappen är aktiv eller trycks ner */
-        .tool-btn:active, .tool-btn.active {
+        .tool-btn:active {
             border-top: 2px solid #404040;
             border-left: 2px solid #404040;
             border-right: 2px solid #ffffff;
             border-bottom: 2px solid #ffffff;
             padding: 7px 13px 5px 15px;
             background: #dfdfdf;
+        }
+
+        /* Liten text-indikator för att visa instruktion */
+        #hint {
+            position: fixed;
+            bottom: 24px;
+            right: 50%;
+            transform: translateX(50%);
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            letter-spacing: -0.01em;
+            pointer-events: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -243,11 +279,29 @@
         <canvas id="draw-canvas"></canvas>
     </div>
 
-    <!-- Win95 / Paint Verktygsfält -->
+    <!-- Klickbar blyertspenna på skrivbordet -->
+    <button id="pencil-tool" title="Click to pick up pencil and sketch">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="140" viewBox="0 0 36 140">
+            <!-- Suddgummi -->
+            <path d="M8 8 L8 18 Q8 20 18 20 Q28 20 28 18 L28 8 Z" fill="#ff9999" stroke="#000" stroke-width="2"/>
+            <!-- Metallhylsa -->
+            <rect x="8" y="18" width="20" height="14" fill="#c0c0c0" stroke="#000" stroke-width="2"/>
+            <!-- Pennkropp (gul träpenna) -->
+            <rect x="8" y="32" width="20" height="75" fill="#f4b41a" stroke="#000" stroke-width="2"/>
+            <!-- Träspets -->
+            <path d="M8 107 L18 128 L28 107 Z" fill="#e2c08d" stroke="#000" stroke-width="2"/>
+            <!-- Stift -->
+            <path d="M15 121 L18 128 L21 121 Z" fill="#222"/>
+        </svg>
+    </button>
+
+    <!-- Win95 / Paint Verktygsfält (visas när pennan är vald) -->
     <div id="toolbar">
-        <button id="pen-toggle" class="tool-btn">✏️ Sketch</button>
-        <button id="clear-canvas" class="tool-btn" style="display:none;">Clear</button>
+        <button id="clear-canvas" class="tool-btn">Clear Sketch</button>
     </div>
+
+    <!-- Instruktionstext -->
+    <div id="hint">Click the pencil on the desk to start sketching</div>
 
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
     <script>
@@ -256,8 +310,10 @@
             const container = document.getElementById('book-container');
             const canvas = document.getElementById('draw-canvas');
             const ctx = canvas.getContext('2d');
-            const penToggle = document.getElementById('pen-toggle');
+            const pencilTool = document.getElementById('pencil-tool');
+            const toolbar = document.getElementById('toolbar');
             const clearBtn = document.getElementById('clear-canvas');
+            const hint = document.getElementById('hint');
 
             let isDrawingMode = false;
             let isDrawing = false;
@@ -269,18 +325,21 @@
             window.addEventListener('resize', initCanvasSize);
             initCanvasSize();
 
-            penToggle.addEventListener('click', () => {
+            // Klicka på pennan för att plocka upp / lägga ifrån sig
+            pencilTool.addEventListener('click', () => {
                 isDrawingMode = !isDrawingMode;
                 if (isDrawingMode) {
                     canvas.classList.add('active');
-                    penToggle.classList.add('active');
-                    penToggle.textContent = '👆 Flip';
-                    clearBtn.style.display = 'inline-block';
+                    pencilTool.classList.add('active');
+                    toolbar.style.display = 'flex';
+                    hint.textContent = 'Sketching mode active — Click pencil again to flip pages';
+                    hint.style.background = 'rgba(230, 57, 70, 0.9)';
                 } else {
                     canvas.classList.remove('active');
-                    penToggle.classList.remove('active');
-                    penToggle.textContent = '✏️ Sketch';
-                    clearBtn.style.display = 'none';
+                    pencilTool.classList.remove('active');
+                    toolbar.style.display = 'none';
+                    hint.textContent = 'Click the pencil on the desk to start sketching';
+                    hint.style.background = 'rgba(0,0,0,0.75)';
                 }
             });
 
@@ -309,7 +368,7 @@
                 const pos = getPos(e);
                 ctx.lineWidth = 2.5;
                 ctx.lineCap = 'round';
-                ctx.strokeStyle = '#e63946';
+                ctx.strokeStyle = '#e63946'; // Skissröd
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
             });
