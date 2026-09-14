@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magasin Portfolio</title>
+    <!-- Lättviktsbibliotek för bläddring via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #161616; /* Mörk, exklusiv bakgrundston */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #book {
+            display: none; /* Visas när skriptet laddat klart */
+        }
+        .page {
+            background-color: white;
+        }
+        .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="book">
+        <!-- Sidor 1 till 44 -->
+        <div class="page"><img src="images/1.jpg" alt="Sida 1"></div>
+        <div class="page"><img src="images/2.jpg" alt="Sida 2"></div>
+        <div class="page"><img src="images/3.jpg" alt="Sida 3"></div>
+        <div class="page"><img src="images/4.jpg" alt="Sida 4"></div>
+        <div class="page"><img src="images/5.jpg" alt="Sida 5"></div>
+        <div class="page"><img src="images/6.jpg" alt="Sida 6"></div>
+        <div class="page"><img src="images/7.jpg" alt="Sida 7"></div>
+        <div class="page"><img src="images/8.jpg" alt="Sida 8"></div>
+        <div class="page"><img src="images/9.jpg" alt="Sida 9"></div>
+        <div class="page"><img src="images/10.jpg" alt="Sida 10"></div>
+        <div class="page"><img src="images/11.jpg" alt="Sida 11"></div>
+        <div class="page"><img src="images/12.jpg" alt="Sida 12"></div>
+        <div class="page"><img src="images/13.jpg" alt="Sida 13"></div>
+        <div class="page"><img src="images/14.jpg" alt="Sida 14"></div>
+        <div class="page"><img src="images/15.jpg" alt="Sida 15"></div>
+        <div class="page"><img src="images/16.jpg" alt="Sida 16"></div>
+        <div class="page"><img src="images/17.jpg" alt="Sida 17"></div>
+        <div class="page"><img src="images/18.jpg" alt="Sida 18"></div>
+        <div class="page"><img src="images/19.jpg" alt="Sida 19"></div>
+        <div class="page"><img src="images/20.jpg" alt="Sida 20"></div>
+        <div class="page"><img src="images/21.jpg" alt="Sida 21"></div>
+        <div class="page"><img src="images/22.jpg" alt="Sida 22"></div>
+        <div class="page"><img src="images/23.jpg" alt="Sida 23"></div>
+        <div class="page"><img src="images/24.jpg" alt="Sida 24"></div>
+        <div class="page"><img src="images/25.jpg" alt="Sida 25"></div>
+        <div class="page"><img src="images/26.jpg" alt="Sida 26"></div>
+        <div class="page"><img src="images/27.jpg" alt="Sida 27"></div>
+        <div class="page"><img src="images/28.jpg" alt="Sida 28"></div>
+        <div class="page"><img src="images/29.jpg" alt="Sida 29"></div>
+        <div class="page"><img src="images/30.jpg" alt="Sida 30"></div>
+        <div class="page"><img src="images/31.jpg" alt="Sida 31"></div>
+        <div class="page"><img src="images/32.jpg" alt="Sida 32"></div>
+        <div class="page"><img src="images/33.jpg" alt="Sida 33"></div>
+        <div class="page"><img src="images/34.jpg" alt="Sida 34"></div>
+        <div class="page"><img src="images/35.jpg" alt="Sida 35"></div>
+        <div class="page"><img src="images/36.jpg" alt="Sida 36"></div>
+        <div class="page"><img src="images/37.jpg" alt="Sida 37"></div>
+        <div class="page"><img src="images/38.jpg" alt="Sida 38"></div>
+        <div class="page"><img src="images/39.jpg" alt="Sida 39"></div>
+        <div class="page"><img src="images/40.jpg" alt="Sida 40"></div>
+        <div class="page"><img src="images/41.jpg" alt="Sida 41"></div>
+        <div class="page"><img src="images/42.jpg" alt="Sida 42"></div>
+        <div class="page"><img src="images/43.jpg" alt="Sida 43"></div>
+        <div class="page"><img src="images/44.jpg" alt="Sida 44"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const pageFlip = new St.PageFlip(
+                document.getElementById("book"),
+                {
+                    width: 700,  
+                    height: 500, 
+                    size: "stretch",
+                    minWidth: 300,
+                    maxWidth: 1200,
+                    minHeight: 200,
+                    maxHeight: 900,
+                    maxShadowOpacity: 0.5,
+                    showCover: true,
+                    mobileScrollSupport: false
+                }
+            );
+
+            pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+            document.getElementById("book").style.display = "block";
+        });
+    </script>
+
+</body>
+</html>
