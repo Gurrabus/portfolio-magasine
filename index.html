@@ -9,7 +9,7 @@
     <style>
         body {
             margin: 0;
-            background-color: #161616; /* Mörk bakgrundston */
+            background-color: #161616; /* Mörk, exklusiv bakgrundston */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,6 +21,8 @@
         }
         #book {
             display: none; /* Visas när skriptet laddat klart */
+            max-width: 100vw;
+            max-height: 100vh;
         }
         .page {
             background-color: white;
@@ -29,14 +31,14 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            pointer-events: none; /* Förhindrar klick och drag på bilderna */
+            pointer-events: none; /* Gör så att man inte kan klicka/dra i själva bilderna */
         }
     </style>
 </head>
 <body>
 
     <div id="book">
-        <!-- Sidor 1 till 86 (Enskilda stående A4-sidor) -->
+        <!-- Sidor 1 till 86 (Stående A4) -->
         <div class="page"><img src="images/1.jpg" alt="Sida 1"></div>
         <div class="page"><img src="images/2.jpg" alt="Sida 2"></div>
         <div class="page"><img src="images/3.jpg" alt="Sida 3"></div>
@@ -112,7 +114,6 @@
         <div class="page"><img src="images/73.jpg" alt="Sida 73"></div>
         <div class="page"><img src="images/74.jpg" alt="Sida 74"></div>
         <div class="page"><img src="images/75.jpg" alt="Sida 75"></div>
-        <div class="page"><img src="pages/76.jpg" alt="Sida 76"></div> <!-- Säkerställ att mappen heter images/76.jpg -->
         <div class="page"><img src="images/76.jpg" alt="Sida 76"></div>
         <div class="page"><img src="images/77.jpg" alt="Sida 77"></div>
         <div class="page"><img src="images/78.jpg" alt="Sida 78"></div>
@@ -135,15 +136,15 @@
             const pageFlip = new St.PageFlip(
                 document.getElementById("book"),
                 {
-                    width: 595,  // Enskild A4-bredd
-                    height: 842, // Enskild A4-höjd
+                    width: 450,  // Anpassad basbredd för skärmanpassning
+                    height: 636, // A4-proportioner (1:1.414)
                     size: "stretch",
-                    minWidth: 300,
-                    maxWidth: 1200,
-                    minHeight: 400,
-                    maxHeight: 1600,
+                    minWidth: 200,
+                    maxWidth: 1000,
+                    minHeight: 300,
+                    maxHeight: 1400,
                     maxShadowOpacity: 0.5,
-                    showCover: true, // Första sidan blir separat framsida
+                    showCover: true,
                     mobileScrollSupport: false
                 }
             );
