@@ -15,6 +15,9 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            /* Förhindrar markering av text/bilder */
+            user-select: none;
+            -webkit-user-select: none;
         }
         #book {
             display: none; /* Visas när skriptet laddat klart */
@@ -26,13 +29,14 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            pointer-events: none; /* Gör så att man inte kan klicka/dra i själva bilderna */
         }
     </style>
 </head>
 <body>
 
     <div id="book">
-        <!-- Sidor 1 till 44 -->
+        <!-- Sidor 1 till 86 -->
         <div class="page"><img src="images/1.jpg" alt="Sida 1"></div>
         <div class="page"><img src="images/2.jpg" alt="Sida 2"></div>
         <div class="page"><img src="images/3.jpg" alt="Sida 3"></div>
@@ -77,9 +81,61 @@
         <div class="page"><img src="images/42.jpg" alt="Sida 42"></div>
         <div class="page"><img src="images/43.jpg" alt="Sida 43"></div>
         <div class="page"><img src="images/44.jpg" alt="Sida 44"></div>
+        <div class="page"><img src="images/45.jpg" alt="Sida 45"></div>
+        <div class="page"><img src="images/46.jpg" alt="Sida 46"></div>
+        <div class="page"><img src="images/47.jpg" alt="Sida 47"></div>
+        <div class="page"><img src="images/48.jpg" alt="Sida 48"></div>
+        <div class="page"><img src="images/49.jpg" alt="Sida 49"></div>
+        <div class="page"><img src="images/50.jpg" alt="Sida 50"></div>
+        <div class="page"><img src="images/51.jpg" alt="Sida 51"></div>
+        <div class="page"><img src="images/52.jpg" alt="Sida 52"></div>
+        <div class="page"><img src="images/53.jpg" alt="Sida 53"></div>
+        <div class="page"><img src="images/54.jpg" alt="Sida 54"></div>
+        <div class="page"><img src="images/55.jpg" alt="Sida 55"></div>
+        <div class="page"><img src="images/56.jpg" alt="Sida 56"></div>
+        <div class="page"><img src="images/57.jpg" alt="Sida 57"></div>
+        <div class="page"><img src="images/58.jpg" alt="Sida 58"></div>
+        <div class="page"><img src="images/59.jpg" alt="Sida 59"></div>
+        <div class="page"><img src="images/60.jpg" alt="Sida 60"></div>
+        <div class="page"><img src="images/61.jpg" alt="Sida 61"></div>
+        <div class="page"><img src="images/62.jpg" alt="Sida 62"></div>
+        <div class="page"><img src="images/63.jpg" alt="Sida 63"></div>
+        <div class="page"><img src="images/64.jpg" alt="Sida 64"></div>
+        <div class="page"><img src="images/65.jpg" alt="Sida 65"></div>
+        <div class="page"><img src="images/66.jpg" alt="Sida 66"></div>
+        <div class="page"><img src="images/67.jpg" alt="Sida 67"></div>
+        <div class="page"><img src="images/68.jpg" alt="Sida 68"></div>
+        <div class="page"><img src="images/69.jpg" alt="Sida 69"></div>
+        <div class="page"><img src="images/70.jpg" alt="Sida 70"></div>
+        <div class="page"><img src="images/71.jpg" alt="Sida 71"></div>
+        <div class="page"><img src="images/72.jpg" alt="Sida 72"></div>
+        <div class="page"><img src="images/73.jpg" alt="Sida 73"></div>
+        <div class="page"><img src="images/74.jpg" alt="Sida 74"></div>
+        <div class="page"><img src="images/75.jpg" alt="Sida 75"></div>
+        <div class="page"><img src="images/76.jpg" alt="Sida 76"></div>
+        <div class="page"><img src="images/77.jpg" alt="Sida 77"></div>
+        <div class="page"><img src="images/78.jpg" alt="Sida 78"></div>
+        <div class="page"><img src="images/79.jpg" alt="Sida 79"></div>
+        <div class="page"><img src="images/80.jpg" alt="Sida 80"></div>
+        <div class="page"><img src="images/81.jpg" alt="Sida 81"></div>
+        <div class="page"><img src="images/82.jpg" alt="Sida 82"></div>
+        <div class="page"><img src="images/83.jpg" alt="Sida 83"></div>
+        <div class="page"><img src="images/84.jpg" alt="Sida 84"></div>
+        <div class="page"><img src="images/85.jpg" alt="Sida 85"></div>
+        <div class="page"><img src="images/86.jpg" alt="Sida 86"></div>
     </div>
 
     <script>
+        // Stoppa högerklick på hela sidan
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Stoppa dragning av element
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+
         document.addEventListener("DOMContentLoaded", function () {
             const pageFlip = new St.PageFlip(
                 document.getElementById("book"),
