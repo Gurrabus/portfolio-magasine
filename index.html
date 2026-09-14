@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Magazine</title>
+    <!-- Importerar en krispig, modern sans-serif (Inter) för att matcha designportfolions stil -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -18,7 +23,7 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         #book-container {
             width: 95vw;
@@ -45,12 +50,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Av som standard så man kan bläddra */
+            pointer-events: none;
             z-index: 100;
             touch-action: none;
         }
         #draw-canvas.active {
-            pointer-events: auto; /* Slår på rita-funktion när läget är aktivt */
+            pointer-events: auto;
             cursor: crosshair;
         }
 
@@ -88,40 +93,43 @@
             pointer-events: none;
         }
 
-        /* Kontrollpanel för pennan längst ner */
+        /* Minimalistisk studio-kontrollpanel längst ner */
         #toolbar {
             position: fixed;
-            bottom: 20px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
             display: flex;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 6px 12px;
+            border-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
         }
         .tool-btn {
             background: transparent;
             border: none;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            transition: all 0.2s ease;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            color: #222;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
         }
         .tool-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(0, 0, 0, 0.04);
         }
         .tool-btn.active {
-            background: #111;
+            background: #1a1a1a;
             color: #fff;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -129,100 +137,100 @@
 
     <div id="book-container">
         <div id="book">
-            <div class="page"><img src="images/1_2x.webp" alt="Sida 1"></div>
-            <div class="page"><img src="images/2_2x.webp" alt="Sida 2"></div>
-            <div class="page"><img src="images/3_2x.webp" alt="Sida 3"></div>
-            <div class="page"><img src="images/4_2x.webp" alt="Sida 4"></div>
-            <div class="page"><img src="images/5_2x.webp" alt="Sida 5"></div>
-            <div class="page"><img src="images/6_2x.webp" alt="Sida 6"></div>
-            <div class="page"><img src="images/7_2x.webp" alt="Sida 7"></div>
-            <div class="page"><img src="images/8_2x.webp" alt="Sida 8"></div>
-            <div class="page"><img src="images/9_2x.webp" alt="Sida 9"></div>
-            <div class="page"><img src="images/10_2x.webp" alt="Sida 10"></div>
-            <div class="page"><img src="images/11_2x.webp" alt="Sida 11"></div>
-            <div class="page"><img src="images/12_2x.webp" alt="Sida 12"></div>
-            <div class="page"><img src="images/13_2x.webp" alt="Sida 13"></div>
-            <div class="page"><img src="images/14_2x.webp" alt="Sida 14"></div>
-            <div class="page"><img src="images/15_2x.webp" alt="Sida 15"></div>
-            <div class="page"><img src="images/16_2x.webp" alt="Sida 16"></div>
-            <div class="page"><img src="images/17_2x.webp" alt="Sida 17"></div>
-            <div class="page"><img src="images/18_2x.webp" alt="Sida 18"></div>
-            <div class="page"><img src="images/19_2x.webp" alt="Sida 19"></div>
-            <div class="page"><img src="images/20_2x.webp" alt="Sida 20"></div>
-            <div class="page"><img src="images/21_2x.webp" alt="Sida 21"></div>
-            <div class="page"><img src="images/22_2x.webp" alt="Sida 22"></div>
-            <div class="page"><img src="images/23_2x.webp" alt="Sida 23"></div>
-            <div class="page"><img src="images/24_2x.webp" alt="Sida 24"></div>
-            <div class="page"><img src="images/25_2x.webp" alt="Sida 25"></div>
-            <div class="page"><img src="images/26_2x.webp" alt="Sida 26"></div>
-            <div class="page"><img src="images/27_2x.webp" alt="Sida 27"></div>
-            <div class="page"><img src="images/28_2x.webp" alt="Sida 28"></div>
-            <div class="page"><img src="images/29_2x.webp" alt="Sida 29"></div>
-            <div class="page"><img src="images/30_2x.webp" alt="Sida 30"></div>
-            <div class="page"><img src="images/31_2x.webp" alt="Sida 31"></div>
-            <div class="page"><img src="images/32_2x.webp" alt="Sida 32"></div>
-            <div class="page"><img src="images/33_2x.webp" alt="Sida 33"></div>
-            <div class="page"><img src="images/34_2x.webp" alt="Sida 34"></div>
-            <div class="page"><img src="images/35_2x.webp" alt="Sida 35"></div>
-            <div class="page"><img src="images/36_2x.webp" alt="Sida 36"></div>
-            <div class="page"><img src="images/37_2x.webp" alt="Sida 37"></div>
-            <div class="page"><img src="images/38_2x.webp" alt="Sida 38"></div>
-            <div class="page"><img src="images/39_2x.webp" alt="Sida 39"></div>
-            <div class="page"><img src="images/40_2x.webp" alt="Sida 40"></div>
-            <div class="page"><img src="images/41_2x.webp" alt="Sida 41"></div>
-            <div class="page"><img src="images/42_2x.webp" alt="Sida 42"></div>
-            <div class="page"><img src="images/43_2x.webp" alt="Sida 43"></div>
-            <div class="page"><img src="images/44_2x.webp" alt="Sida 44"></div>
-            <div class="page"><img src="images/45_2x.webp" alt="Sida 45"></div>
-            <div class="page"><img src="images/46_2x.webp" alt="Sida 46"></div>
-            <div class="page"><img src="images/47_2x.webp" alt="Sida 47"></div>
-            <div class="page"><img src="images/48_2x.webp" alt="Sida 48"></div>
-            <div class="page"><img src="images/49_2x.webp" alt="Sida 49"></div>
-            <div class="page"><img src="images/40_2x.webp" alt="Sida 50"></div> <!-- Justerat bildindex om det behövdes -->
-            <div class="page"><img src="images/51_2x.webp" alt="Sida 51"></div>
-            <div class="page"><img src="images/52_2x.webp" alt="Sida 52"></div>
-            <div class="page"><img src="images/53_2x.webp" alt="Sida 53"></div>
-            <div class="page"><img src="images/54_2x.webp" alt="Sida 54"></div>
-            <div class="page"><img src="images/55_2x.webp" alt="Sida 55"></div>
-            <div class="page"><img src="images/56_2x.webp" alt="Sida 56"></div>
-            <div class="page"><img src="images/57_2x.webp" alt="Sida 57"></div>
-            <div class="page"><img src="images/58_2x.webp" alt="Sida 58"></div>
-            <div class="page"><img src="images/59_2x.webp" alt="Sida 59"></div>
-            <div class="page"><img src="images/60_2x.webp" alt="Sida 60"></div>
-            <div class="page"><img src="images/61_2x.webp" alt="Sida 61"></div>
-            <div class="page"><img src="images/62_2x.webp" alt="Sida 62"></div>
-            <div class="page"><img src="images/63_2x.webp" alt="Sida 63"></div>
-            <div class="page"><img src="images/64_2x.webp" alt="Sida 64"></div>
-            <div class="page"><img src="images/65_2x.webp" alt="Sida 65"></div>
-            <div class="page"><img src="images/66_2x.webp" alt="Sida 66"></div>
-            <div class="page"><img src="images/67_2x.webp" alt="Sida 67"></div>
-            <div class="page"><img src="images/68_2x.webp" alt="Sida 68"></div>
-            <div class="page"><img src="images/69_2x.webp" alt="Sida 69"></div>
-            <div class="page"><img src="images/70_2x.webp" alt="Sida 70"></div>
-            <div class="page"><img src="images/71_2x.webp" alt="Sida 71"></div>
-            <div class="page"><img src="images/72_2x.webp" alt="Sida 72"></div>
-            <div class="page"><img src="images/73_2x.webp" alt="Sida 73"></div>
-            <div class="page"><img src="images/74_2x.webp" alt="Sida 74"></div>
-            <div class="page"><img src="images/75_2x.webp" alt="Sida 75"></div>
-            <div class="page"><img src="images/76_2x.webp" alt="Sida 76"></div>
-            <div class="page"><img src="images/77_2x.webp" alt="Sida 77"></div>
-            <div class="page"><img src="images/78_2x.webp" alt="Sida 78"></div>
-            <div class="page"><img src="images/79_2x.webp" alt="Sida 79"></div>
-            <div class="page"><img src="images/80_2x.webp" alt="Sida 80"></div>
-            <div class="page"><img src="images/81_2x.webp" alt="Sida 81"></div>
-            <div class="page"><img src="images/82_2x.webp" alt="Sida 82"></div>
-            <div class="page"><img src="images/83_2x.webp" alt="Sida 83"></div>
-            <div class="page"><img src="images/84_2x.webp" alt="Sida 84"></div>
-            <div class="page"><img src="images/85_2x.webp" alt="Sida 85"></div>
-            <div class="page"><img src="images/86_2x.webp" alt="Sida 86"></div>
+            <div class="page"><img src="images/1_2x.webp" alt="Page 1"></div>
+            <div class="page"><img src="images/2_2x.webp" alt="Page 2"></div>
+            <div class="page"><img src="images/3_2x.webp" alt="Page 3"></div>
+            <div class="page"><img src="images/4_2x.webp" alt="Page 4"></div>
+            <div class="page"><img src="images/5_2x.webp" alt="Page 5"></div>
+            <div class="page"><img src="images/6_2x.webp" alt="Page 6"></div>
+            <div class="page"><img src="images/7_2x.webp" alt="Page 7"></div>
+            <div class="page"><img src="images/8_2x.webp" alt="Page 8"></div>
+            <div class="page"><img src="images/9_2x.webp" alt="Page 9"></div>
+            <div class="page"><img src="images/10_2x.webp" alt="Page 10"></div>
+            <div class="page"><img src="images/11_2x.webp" alt="Page 11"></div>
+            <div class="page"><img src="images/12_2x.webp" alt="Page 12"></div>
+            <div class="page"><img src="images/13_2x.webp" alt="Page 13"></div>
+            <div class="page"><img src="images/14_2x.webp" alt="Page 14"></div>
+            <div class="page"><img src="images/15_2x.webp" alt="Page 15"></div>
+            <div class="page"><img src="images/16_2x.webp" alt="Page 16"></div>
+            <div class="page"><img src="images/17_2x.webp" alt="Page 17"></div>
+            <div class="page"><img src="images/18_2x.webp" alt="Page 18"></div>
+            <div class="page"><img src="images/19_2x.webp" alt="Page 19"></div>
+            <div class="page"><img src="images/20_2x.webp" alt="Page 20"></div>
+            <div class="page"><img src="images/21_2x.webp" alt="Page 21"></div>
+            <div class="page"><img src="images/22_2x.webp" alt="Page 22"></div>
+            <div class="page"><img src="images/23_2x.webp" alt="Page 23"></div>
+            <div class="page"><img src="images/24_2x.webp" alt="Page 24"></div>
+            <div class="page"><img src="images/25_2x.webp" alt="Page 25"></div>
+            <div class="page"><img src="images/26_2x.webp" alt="Page 26"></div>
+            <div class="page"><img src="images/27_2x.webp" alt="Page 27"></div>
+            <div class="page"><img src="images/28_2x.webp" alt="Page 28"></div>
+            <div class="page"><img src="images/29_2x.webp" alt="Page 29"></div>
+            <div class="page"><img src="images/30_2x.webp" alt="Page 30"></div>
+            <div class="page"><img src="images/31_2x.webp" alt="Page 31"></div>
+            <div class="page"><img src="images/32_2x.webp" alt="Page 32"></div>
+            <div class="page"><img src="images/33_2x.webp" alt="Page 33"></div>
+            <div class="page"><img src="images/34_2x.webp" alt="Page 34"></div>
+            <div class="page"><img src="images/35_2x.webp" alt="Page 35"></div>
+            <div class="page"><img src="images/36_2x.webp" alt="Page 36"></div>
+            <div class="page"><img src="images/37_2x.webp" alt="Page 37"></div>
+            <div class="page"><img src="images/38_2x.webp" alt="Page 38"></div>
+            <div class="page"><img src="images/39_2x.webp" alt="Page 39"></div>
+            <div class="page"><img src="images/40_2x.webp" alt="Page 40"></div>
+            <div class="page"><img src="images/41_2x.webp" alt="Page 41"></div>
+            <div class="page"><img src="images/42_2x.webp" alt="Page 42"></div>
+            <div class="page"><img src="images/43_2x.webp" alt="Page 43"></div>
+            <div class="page"><img src="images/44_2x.webp" alt="Page 44"></div>
+            <div class="page"><img src="images/45_2x.webp" alt="Page 45"></div>
+            <div class="page"><img src="images/46_2x.webp" alt="Page 46"></div>
+            <div class="page"><img src="images/47_2x.webp" alt="Page 47"></div>
+            <div class="page"><img src="images/48_2x.webp" alt="Page 48"></div>
+            <div class="page"><img src="images/49_2x.webp" alt="Page 49"></div>
+            <div class="page"><img src="images/50_2x.webp" alt="Page 50"></div>
+            <div class="page"><img src="images/51_2x.webp" alt="Page 51"></div>
+            <div class="page"><img src="images/52_2x.webp" alt="Page 52"></div>
+            <div class="page"><img src="images/53_2x.webp" alt="Page 53"></div>
+            <div class="page"><img src="images/54_2x.webp" alt="Page 54"></div>
+            <div class="page"><img src="images/55_2x.webp" alt="Page 55"></div>
+            <div class="page"><img src="images/56_2x.webp" alt="Page 56"></div>
+            <div class="page"><img src="images/57_2x.webp" alt="Page 57"></div>
+            <div class="page"><img src="images/58_2x.webp" alt="Page 58"></div>
+            <div class="page"><img src="images/59_2x.webp" alt="Page 59"></div>
+            <div class="page"><img src="images/60_2x.webp" alt="Page 60"></div>
+            <div class="page"><img src="images/61_2x.webp" alt="Page 61"></div>
+            <div class="page"><img src="images/62_2x.webp" alt="Page 62"></div>
+            <div class="page"><img src="images/63_2x.webp" alt="Page 63"></div>
+            <div class="page"><img src="images/64_2x.webp" alt="Page 64"></div>
+            <div class="page"><img src="images/65_2x.webp" alt="Page 65"></div>
+            <div class="page"><img src="images/66_2x.webp" alt="Page 66"></div>
+            <div class="page"><img src="images/67_2x.webp" alt="Page 67"></div>
+            <div class="page"><img src="images/68_2x.webp" alt="Page 68"></div>
+            <div class="page"><img src="images/69_2x.webp" alt="Page 69"></div>
+            <div class="page"><img src="images/70_2x.webp" alt="Page 70"></div>
+            <div class="page"><img src="images/71_2x.webp" alt="Page 71"></div>
+            <div class="page"><img src="images/72_2x.webp" alt="Page 72"></div>
+            <div class="page"><img src="images/73_2x.webp" alt="Page 73"></div>
+            <div class="page"><img src="images/74_2x.webp" alt="Page 74"></div>
+            <div class="page"><img src="images/75_2x.webp" alt="Page 75"></div>
+            <div class="page"><img src="images/76_2x.webp" alt="Page 76"></div>
+            <div class="page"><img src="images/77_2x.webp" alt="Page 77"></div>
+            <div class="page"><img src="images/78_2x.webp" alt="Page 78"></div>
+            <div class="page"><img src="images/79_2x.webp" alt="Page 79"></div>
+            <div class="page"><img src="images/80_2x.webp" alt="Page 80"></div>
+            <div class="page"><img src="images/81_2x.webp" alt="Page 81"></div>
+            <div class="page"><img src="images/82_2x.webp" alt="Page 82"></div>
+            <div class="page"><img src="images/83_2x.webp" alt="Page 83"></div>
+            <div class="page"><img src="images/84_2x.webp" alt="Page 84"></div>
+            <div class="page"><img src="images/85_2x.webp" alt="Page 85"></div>
+            <div class="page"><img src="images/86_2x.webp" alt="Page 86"></div>
         </div>
         <canvas id="draw-canvas"></canvas>
     </div>
 
-    <!-- Diskret verktygsfält längst ner -->
+    <!-- Diskret verktygsfält -->
     <div id="toolbar">
-        <button id="pen-toggle" class="tool-btn">✏️ Skissa</button>
-        <button id="clear-canvas" class="tool-btn" style="display:none;">Rensa</button>
+        <button id="pen-toggle" class="tool-btn">✏️ Sketch</button>
+        <button id="clear-canvas" class="tool-btn" style="display:none;">Clear</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
@@ -238,7 +246,6 @@
             let isDrawingMode = false;
             let isDrawing = false;
 
-            // Sätt upp ritytans storlek exakt efter behållaren
             function initCanvasSize() {
                 canvas.width = container.clientWidth;
                 canvas.height = container.clientHeight;
@@ -246,28 +253,25 @@
             window.addEventListener('resize', initCanvasSize);
             initCanvasSize();
 
-            // Toggle ritläge
             penToggle.addEventListener('click', () => {
                 isDrawingMode = !isDrawingMode;
                 if (isDrawingMode) {
                     canvas.classList.add('active');
                     penToggle.classList.add('active');
-                    penToggle.textContent = '👆 Bläddra';
+                    penToggle.textContent = '👆 Flip';
                     clearBtn.style.display = 'inline-block';
                 } else {
                     canvas.classList.remove('active');
                     penToggle.classList.remove('active');
-                    penToggle.textContent = '✏️ Skissa';
+                    penToggle.textContent = '✏️ Sketch';
                     clearBtn.style.display = 'none';
                 }
             });
 
-            // Rensa ritningen
             clearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             });
 
-            // Ritlogik (mus och touch)
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 return {
@@ -287,16 +291,15 @@
             canvas.addEventListener('mousemove', (e) => {
                 if (!isDrawing || !isDrawingMode) return;
                 const pos = getPos(e);
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2.5;
                 ctx.lineCap = 'round';
-                ctx.strokeStyle = '#e63946'; // Snygg röd design-skissfärg (eller byt till '#111' för svart penna)
+                ctx.strokeStyle = '#e63946'; // Skissröd
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
             });
 
             window.addEventListener('mouseup', () => { isDrawing = false; });
 
-            // Stöd för touch på surfplatta / mobil
             canvas.addEventListener('touchstart', (e) => {
                 if (!isDrawingMode) return;
                 isDrawing = true;
@@ -311,8 +314,8 @@
                 if (!isDrawing || !isDrawingMode) return;
                 const touch = e.touches[0];
                 const pos = getPos(touch);
-                ctx.lineWidth = 3;
-                ctx.lineCap.rounded = true;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
                 ctx.strokeStyle = '#e63946';
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
@@ -321,7 +324,6 @@
 
             window.addEventListener('touchend', () => { isDrawing = false; });
 
-            // Initiera själva page-flip
             const pageFlip = new St.PageFlip(bookElement, {
                 width: 450,
                 height: 640,
