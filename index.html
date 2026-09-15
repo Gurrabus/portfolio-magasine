@@ -88,9 +88,38 @@
             background: linear-gradient(to right, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%);
             pointer-events: none;
         }
+
+        /* Stilren fullskärms-knapp */
+        #fullscreen-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            z-index: 10;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        #fullscreen-btn:hover {
+            background: #ffffff;
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            color: #111827;
+        }
     </style>
 </head>
 <body>
+
+    <button id="fullscreen-btn">Full screen</button>
 
     <div id="book-container">
         <div id="book">
@@ -207,14 +236,37 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
-            // 1. Funktion för subtilt pappersljud vid sidvändning
+            // 1. Fullskärms-funktionalitet
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Kunde inte aktivera fullskärm: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenBtn.textContent = 'Avsluta fullskärm';
+                } else {
+                    fullscreenBtn.textContent = 'Full screen';
+                }
+            });
+
+            // 2. Funktion för subtilt pappersljud vid sidvändning
             function playPaperSound() {
                 try {
                     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     if (audioCtx.state === 'suspended') {
                         audioCtx.resume();
                     }
-                    const bufferSize = audioCtx.sampleRate * 0.06; // Korthålligt prassel (60ms)
+                    const bufferSize = audioCtx.sampleRate * 0.06;
                     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                     const data = buffer.getChannelData(0);
                     for (let i = 0; i < bufferSize; i++) {
@@ -238,16 +290,15 @@
 
                     noise.start();
                 } catch (e) {
-                    // Ignorera om webbläsaren blockerar ljud innan interaktion
+                    // Ignorera om ljud blockeras före interaktion
                 }
             }
 
-            // Spela ljud när en sida börjar vändas
             pageFlip.on('flip', () => {
                 playPaperSound();
             });
 
-            // 2. Tangentbordsnavigering (vänster- och högerpilar)
+            // 3. Tangentbordsnavigering (vänster- och högerpilar)
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
                     pageFlip.flipNext();
