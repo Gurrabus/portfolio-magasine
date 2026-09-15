@@ -14,13 +14,13 @@
             box-sizing: border-box;
         }
 
-        /* 1. FÖRHINDRAR ALLA SCROLLISTER OCH SKAKNINGAR */
+        /* FÖRHINDRAR ALLA SCROLLISTER OCH SKAKNINGAR */
         html, body {
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden !important; /* Döljer scrollisterna helt */
+            overflow: hidden !important;
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             background-size: 200% 200%;
             animation: bgShift 25s ease infinite;
@@ -29,7 +29,6 @@
             user-select: none;
         }
 
-        /* Döljer scrollbar i alla webbläsare */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -76,10 +75,11 @@
             overflow: hidden;
         }
 
+        /* STÖRRE STORLEK PÅ DATOR (DEFAULT) */
         #book-container {
-            width: 95vw;
-            height: 80vh;
-            max-width: 1100px;
+            width: 98vw;
+            height: 92vh;
+            max-width: 1450px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -156,7 +156,13 @@
             color: #111827;
         }
 
+        /* OFÖRÄNDRAD MOBILANPASSNING */
         @media (max-width: 768px) {
+            #book-container {
+                width: 95vw;
+                height: 80vh;
+                max-width: 1100px;
+            }
             body {
                 cursor: auto;
             }
@@ -279,15 +285,15 @@
                 height: 640,
                 size: "stretch",
                 minWidth: 250,
-                maxWidth: 800,
+                maxWidth: 1000,
                 minHeight: 350,
-                maxHeight: 1000,
+                maxHeight: 1400,
                 maxShadowOpacity: 0.4,
                 showCover: true,
                 drawShadow: true,
                 flippingTime: 800,
                 usePortrait: true,
-                mobileScrollSupport: false, /* Avstängt för att förhindra krock med zoom */
+                mobileScrollSupport: false,
                 startPage: 0
             });
 
@@ -327,10 +333,10 @@
                 }
             }, { passive: false });
 
-            // 2. FÖRHINDRAR SIDSORTERING VID ZOOM/PANERING PÅ MOBIL
+            // Förhindrar sidsortering vid zoom/panering på mobil
             wrapper.addEventListener('touchstart', (e) => {
                 if (e.touches.length > 1 || scale > 1.05) {
-                    e.stopPropagation(); // Stoppar PageFlip från att se touch-händelsen
+                    e.stopPropagation();
                 }
 
                 if (e.touches.length === 2) {
@@ -347,7 +353,7 @@
 
             wrapper.addEventListener('touchmove', (e) => {
                 if (e.touches.length > 1 || scale > 1.05) {
-                    e.stopPropagation(); // Stoppar sidsortering när man nyp-zoomar eller panorerar
+                    e.stopPropagation();
                 }
 
                 if (e.touches.length === 2 && initialPinchDist) {
