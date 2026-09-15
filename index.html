@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
+        @font-face {
+            font-family: 'OCR A Extended';
+            src: local('OCR A Extended'), local('OCRAExtended');
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -26,6 +31,13 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-user-select: none;
             user-select: none;
+            transition: background 0.4s ease;
+        }
+
+        /* MÖRKT TEMA (STUDIO MODE) */
+        body.dark-theme {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%) !important;
+            animation: none;
         }
 
         ::-webkit-scrollbar {
@@ -60,7 +72,11 @@
             pointer-events: none;
             z-index: 999999;
             transform: translate(-50%, -50%);
-            transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+            transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background-color 0.3s ease;
+        }
+
+        body.dark-theme #custom-cursor {
+            background-color: #ffffff;
         }
 
         #book-wrapper {
@@ -74,16 +90,29 @@
         }
 
         #book-container {
-            width: 98vw;
-            height: 92vh;
-            max-width: 1450px;
             display: flex;
             justify-content: center;
             align-items: center;
             filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.12));
             transform-origin: center center;
-            transition: transform 0.05s ease-out;
+            transition: transform 0.05s ease-out, width 0.2s ease, height 0.2s ease;
             touch-action: manipulation;
+        }
+
+        /* STORLEKSSTYRNING: UPPSLAG (2 SIDOR) */
+        body.mode-spread #book-container {
+            height: 85dvh !important;
+            width: calc(85dvh * 1.406) !important;
+            max-width: 94vw !important;
+            max-height: calc(94vw / 1.406) !important;
+        }
+
+        /* STORLEKSSTYRNING: ENSTAKA SIDA (1 SIDA) */
+        body.mode-single #book-container {
+            height: 82dvh !important;
+            width: calc(82dvh * 0.703) !important;
+            max-width: 90vw !important;
+            max-height: calc(90vw / 0.703) !important;
         }
 
         #book {
@@ -99,12 +128,11 @@
             position: relative;
         }
         
-        /* BILDEN TÄCKER NU HELA SIDAN UTAN VITA KANTER */
         .page img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Täcker hela sidan utan letterboxing */
-            transform: scale(1.01); /* Liten överlappning för att eliminera glapp i kanterna */
+            object-fit: cover;
+            transform: scale(1.01);
             pointer-events: none;
             display: block;
         }
@@ -130,54 +158,198 @@
             pointer-events: none;
         }
 
-        #fullscreen-btn {
+        /* --- UI CONTROLS DESIGN (OCR A EXTENDED) --- */
+        #ui-controls {
             position: fixed;
             top: 24px;
-            right: 24px;
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: #374151;
+            right: 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 28px;
+            z-index: 10000;
+        }
+
+        .ui-icon-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
             cursor: none;
-            z-index: 1000;
-            backdrop-filter: blur(6px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #000000;
+            font-family: 'OCR A Extended', 'OCRA', 'Courier New', monospace;
+            outline: none;
+            transition: color 0.3s ease;
         }
 
-        #fullscreen-btn:hover {
-            background: #ffffff;
-            transform: scale(1.02);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-            color: #111827;
+        body.dark-theme .ui-icon-btn {
+            color: #ffffff;
         }
 
+        .btn-label {
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.15;
+            margin-bottom: 8px;
+            height: 24px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            white-space: pre-line;
+        }
+
+        /* VÄXELKNAPP (STRECKAD KAPSEL) */
+        .toggle-track {
+            width: 18px;
+            height: 38px;
+            border: 1px dashed #000000;
+            border-radius: 10px;
+            position: relative;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        body.dark-theme .toggle-track {
+            border-color: #ffffff;
+        }
+
+        .toggle-thumb {
+            width: 14px;
+            height: 14px;
+            background-color: #000000;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+        }
+
+        body.dark-theme .toggle-thumb {
+            background-color: #ffffff;
+        }
+
+        /* AKTIVT LÄGE FÖR TOGGLE (CIRKELN GLIDER NER) */
+        .ui-icon-btn.active .toggle-thumb {
+            transform: translateY(20px);
+        }
+
+        /* NEDLADDNINGSKNAPP (ENKEL CIRKEL) */
+        .btn-dot-wrapper {
+            width: 18px;
+            height: 38px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 1px;
+        }
+
+        .btn-dot {
+            width: 14px;
+            height: 14px;
+            background-color: #000000;
+            border-radius: 50%;
+            transition: transform 0.15s ease, background-color 0.3s ease;
+        }
+
+        body.dark-theme .btn-dot {
+            background-color: #ffffff;
+        }
+
+        .ui-icon-btn:active .btn-dot {
+            transform: scale(0.85);
+        }
+
+        /* MOBILANPASSNING */
         @media (max-width: 768px) {
-            #book-container {
-                width: 95vw;
-                height: 80vh;
-                max-width: 1100px;
-            }
             body {
                 cursor: auto;
             }
             #custom-cursor {
                 display: none;
             }
+
+            .ui-icon-btn {
+                cursor: pointer;
+            }
+
+            /* DÖLJ FULLSKÄRMSKNAPPEN PÅ MOBIL */
             #fullscreen-btn {
-                display: none;
+                display: none !important;
+            }
+
+            #ui-controls {
+                top: 14px;
+                right: 14px;
+                gap: 18px;
+            }
+
+            .btn-label {
+                font-size: 9px;
+                height: 20px;
+                margin-bottom: 6px;
+            }
+
+            .toggle-track {
+                width: 16px;
+                height: 34px;
+            }
+
+            .toggle-thumb {
+                width: 12px;
+                height: 12px;
+            }
+
+            .ui-icon-btn.active .toggle-thumb {
+                transform: translateY(18px);
+            }
+
+            .btn-dot {
+                width: 12px;
+                height: 12px;
             }
         }
     </style>
 </head>
-<body>
+<body class="mode-spread">
 
     <div id="custom-cursor"></div>
-    <button id="fullscreen-btn">Full Screen</button>
+    
+    <!-- HÖGKERHÖRNSKONTROLLER MED DIN DESIGN -->
+    <div id="ui-controls">
+        <button id="fullscreen-btn" class="ui-icon-btn" title="Full Screen">
+            <span class="btn-label">FULL<br>SCREEN</span>
+            <div class="toggle-track">
+                <div class="toggle-thumb"></div>
+            </div>
+        </button>
+
+        <button id="toggle-mode-btn" class="ui-icon-btn" title="Toggle Mode">
+            <span class="btn-label">MODE</span>
+            <div class="toggle-track">
+                <div class="toggle-thumb"></div>
+            </div>
+        </button>
+
+        <button id="toggle-theme-btn" class="ui-icon-btn" title="Background Theme">
+            <span class="btn-label">THEME</span>
+            <div class="toggle-track">
+                <div class="toggle-thumb"></div>
+            </div>
+        </button>
+
+        <a href="portfolio.pdf" download="portfolio.pdf" id="download-btn" class="ui-icon-btn" title="Download PDF">
+            <span class="btn-label">DOWNLOAD</span>
+            <div class="btn-dot-wrapper">
+                <div class="btn-dot"></div>
+            </div>
+        </a>
+    </div>
 
     <div id="book-wrapper">
         <div id="book-container">
@@ -276,16 +448,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // --- PAGE FLIP INITIALERING ---
             const bookElement = document.getElementById('book');
+            const toggleModeBtn = document.getElementById('toggle-mode-btn');
+            const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+            // Startläge baserat på stående vs liggande skärm
+            const isMobilePortrait = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+            if (isMobilePortrait) {
+                document.body.classList.remove('mode-spread');
+                document.body.classList.add('mode-single');
+                toggleModeBtn.classList.add('active');
+            } else {
+                document.body.classList.remove('mode-single');
+                document.body.classList.add('mode-spread');
+                toggleModeBtn.classList.remove('active');
+            }
 
             const pageFlip = new St.PageFlip(bookElement, {
                 width: 450,
                 height: 640,
                 size: "stretch",
-                minWidth: 250,
+                minWidth: 100,
                 maxWidth: 1000,
-                minHeight: 350,
+                minHeight: 140,
                 maxHeight: 1400,
                 maxShadowOpacity: 0.4,
                 showCover: true,
@@ -298,6 +484,55 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
+            // --- KNAPP 1: MODE (1 SIDA / UPPSLAG) ---
+            toggleModeBtn.addEventListener('click', () => {
+                if (document.body.classList.contains('mode-spread')) {
+                    document.body.classList.remove('mode-spread');
+                    document.body.classList.add('mode-single');
+                    toggleModeBtn.classList.add('active');
+                } else {
+                    document.body.classList.remove('mode-single');
+                    document.body.classList.add('mode-spread');
+                    toggleModeBtn.classList.remove('active');
+                }
+                refreshLayout();
+            });
+
+            // --- KNAPP 2: THEME (LIGHT / DARK BACKGROUND) ---
+            toggleThemeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                toggleThemeBtn.classList.toggle('active');
+            });
+
+            // --- KNAPP 3: FULL SCREEN ---
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenBtn.classList.add('active');
+                } else {
+                    fullscreenBtn.classList.remove('active');
+                }
+            });
+
+            // --- UPPDATERA STORLEK VID RENSNING/SKÄRMÄNDRING ---
+            function refreshLayout() {
+                setTimeout(() => {
+                    if (pageFlip) pageFlip.update();
+                }, 100);
+            }
+            window.addEventListener('resize', refreshLayout);
+            window.addEventListener('orientationchange', refreshLayout);
 
             // --- SCROLL- OCH PINCH-ZOOM LOGIK ---
             const bookContainer = document.getElementById('book-container');
@@ -319,7 +554,6 @@
                 bookContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
             }
 
-            // Scrollhjul-zoom
             wrapper.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
@@ -336,7 +570,6 @@
                 }
             }, { passive: false });
 
-            // Touch-hantering
             wrapper.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     touchStartTime = Date.now();
@@ -417,8 +650,7 @@
                 touchStartTime = 0;
             }, { capture: true });
 
-
-            // --- MUSPEKARE ---
+            // --- MUSPEKARE (ENDAST DATOR) ---
             const cursor = document.getElementById('custom-cursor');
 
             document.addEventListener('mousemove', (e) => {
@@ -426,7 +658,7 @@
                 cursor.style.top = `${e.clientY}px`;
             });
 
-            const interactiveElements = document.querySelectorAll('#fullscreen-btn, #book-container');
+            const interactiveElements = document.querySelectorAll('.ui-icon-btn, #book-container');
             interactiveElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
@@ -435,31 +667,6 @@
                     cursor.style.transform = 'translate(-50%, -50%) scale(1)';
                 });
             });
-
-
-            // --- FULLSCREEN-KNAPP ---
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
-            
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(err => {
-                        console.error(`Could not enable fullscreen: ${err.message}`);
-                    });
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
-                }
-            });
-
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    fullscreenBtn.textContent = 'Exit Fullscreen';
-                } else {
-                    fullscreenBtn.textContent = 'Full Screen';
-                }
-            });
-
 
             // --- PAPPERSLJUD ---
             function playPaperSound() {
@@ -497,7 +704,6 @@
             pageFlip.on('flip', () => {
                 playPaperSound();
             });
-
 
             // --- TANGENTBORDSNAVIGERING ---
             document.addEventListener('keydown', (e) => {
