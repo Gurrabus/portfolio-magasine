@@ -17,7 +17,9 @@
         body {
             margin: 0;
             padding: 0;
+            /* Döljer standardmuspekaren på datorer till förmån för den egna cirkeln */
             cursor: none;
+            /* Subtil, levande bakgrundsgradient */
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             background-size: 200% 200%;
             animation: bgShift 25s ease infinite;
@@ -27,7 +29,6 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            touch-action: manipulation;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
@@ -37,7 +38,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Custom cursor */
+        /* Anpassad fylld svart cirkel som muspekare */
         #custom-cursor {
             position: fixed;
             top: 0;
@@ -48,47 +49,25 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 99999;
-            will-change: transform;
-            transform: translate3d(-100px, -100px, 0);
-        }
-
-        /* Zoom- och panoreringsbehållare */
-        #zoom-viewport {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: absolute;
-            top: 0;
-            left: 0;
-            touch-action: manipulation;
-        }
-
-        #zoom-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            will-change: transform;
-            transform-origin: center center;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
         }
 
         #book-container {
-            width: 90vw;
-            height: 85vh;
-            max-width: 1600px;
+            width: 95vw;
+            height: 80vh;
+            max-width: 1100px;
             display: flex;
             justify-content: center;
             align-items: center;
+            /* Förfinad drop-shadow som ger boken ett levande svävande djup */
+            filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.12));
             position: relative;
+            cursor: none;
         }
 
         #book {
-            width: 100%;
-            height: 100%;
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.1),
                 inset 0 0 0 1px rgba(0, 0, 0, 0.05),
                 -3px 0 5px rgba(0, 0, 0, 0.03),
                 3px 0 5px rgba(0, 0, 0, 0.03);
@@ -128,11 +107,12 @@
             pointer-events: none;
         }
 
+        /* Stilren fullskärms-knapp (endast för datorer) */
         #fullscreen-btn {
             position: absolute;
             top: 24px;
             right: 24px;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(0, 0, 0, 0.08);
             padding: 8px 16px;
             border-radius: 20px;
@@ -142,16 +122,19 @@
             color: #374151;
             cursor: none;
             z-index: 10;
+            backdrop-filter: blur(6px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         #fullscreen-btn:hover {
-            background: #f9fafb;
+            background: #ffffff;
             transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             color: #111827;
         }
 
+        /* Dölj knappen och återställ standardpekare på mobiler och mindre skärmar (under 768px) */
         @media (max-width: 768px) {
             body {
                 cursor: auto;
@@ -167,102 +150,99 @@
 </head>
 <body>
 
+    <!-- Anpassad muspekare -->
     <div id="custom-cursor"></div>
 
     <button id="fullscreen-btn">Full Screen</button>
 
-    <div id="zoom-viewport">
-        <div id="zoom-container">
-            <div id="book-container">
-                <div id="book">
-                    <div class="page"><img src="images/1_2x.webp" alt="Page 1"></div>
-                    <div class="page"><img src="images/2_2x.webp" alt="Page 2"></div>
-                    <div class="page"><img src="images/3_2x.webp" alt="Page 3"></div>
-                    <div class="page"><img src="images/4_2x.webp" alt="Page 4"></div>
-                    <div class="page"><img src="images/5_2x.webp" alt="Page 5"></div>
-                    <div class="page"><img src="images/6_2x.webp" alt="Page 6"></div>
-                    <div class="page"><img src="images/7_2x.webp" alt="Page 7"></div>
-                    <div class="page"><img src="images/8_2x.webp" alt="Page 8"></div>
-                    <div class="page"><img src="images/9_2x.webp" alt="Page 9"></div>
-                    <div class="page"><img src="images/10_2x.webp" alt="Page 10"></div>
-                    <div class="page"><img src="images/11_2x.webp" alt="Page 11"></div>
-                    <div class="page"><img src="images/12_2x.webp" alt="Page 12"></div>
-                    <div class="page"><img src="images/13_2x.webp" alt="Page 13"></div>
-                    <div class="page"><img src="images/14_2x.webp" alt="Page 14"></div>
-                    <div class="page"><img src="images/15_2x.webp" alt="Page 15"></div>
-                    <div class="page"><img src="images/16_2x.webp" alt="Page 16"></div>
-                    <div class="page"><img src="images/17_2x.webp" alt="Page 17"></div>
-                    <div class="page"><img src="images/18_2x.webp" alt="Page 18"></div>
-                    <div class="page"><img src="images/19_2x.webp" alt="Page 19"></div>
-                    <div class="page"><img src="images/20_2x.webp" alt="Page 20"></div>
-                    <div class="page"><img src="images/21_2x.webp" alt="Page 21"></div>
-                    <div class="page"><img src="images/22_2x.webp" alt="Page 22"></div>
-                    <div class="page"><img src="images/23_2x.webp" alt="Page 23"></div>
-                    <div class="page"><img src="images/24_2x.webp" alt="Page 24"></div>
-                    <div class="page"><img src="images/25_2x.webp" alt="Page 25"></div>
-                    <div class="page"><img src="images/26_2x.webp" alt="Page 26"></div>
-                    <div class="page"><img src="images/27_2x.webp" alt="Page 27"></div>
-                    <div class="page"><img src="images/28_2x.webp" alt="Page 28"></div>
-                    <div class="page"><img src="images/29_2x.webp" alt="Page 29"></div>
-                    <div class="page"><img src="images/30_2x.webp" alt="Page 30"></div>
-                    <div class="page"><img src="images/31_2x.webp" alt="Page 31"></div>
-                    <div class="page"><img src="images/32_2x.webp" alt="Page 32"></div>
-                    <div class="page"><img src="images/33_2x.webp" alt="Page 33"></div>
-                    <div class="page"><img src="images/34_2x.webp" alt="Page 34"></div>
-                    <div class="page"><img src="images/35_2x.webp" alt="Page 35"></div>
-                    <div class="page"><img src="images/36_2x.webp" alt="Page 36"></div>
-                    <div class="page"><img src="images/37_2x.webp" alt="Page 37"></div>
-                    <div class="page"><img src="images/38_2x.webp" alt="Page 38"></div>
-                    <div class="page"><img src="images/39_2x.webp" alt="Page 39"></div>
-                    <div class="page"><img src="images/40_2x.webp" alt="Page 40"></div>
-                    <div class="page"><img src="images/41_2x.webp" alt="Page 41"></div>
-                    <div class="page"><img src="images/42_2x.webp" alt="Page 42"></div>
-                    <div class="page"><img src="images/43_2x.webp" alt="Page 43"></div>
-                    <div class="page"><img src="images/44_2x.webp" alt="Page 44"></div>
-                    <div class="page"><img src="images/45_2x.webp" alt="Page 45"></div>
-                    <div class="page"><img src="images/46_2x.webp" alt="Page 46"></div>
-                    <div class="page"><img src="images/47_2x.webp" alt="Page 47"></div>
-                    <div class="page"><img src="images/48_2x.webp" alt="Page 48"></div>
-                    <div class="page"><img src="images/49_2x.webp" alt="Page 49"></div>
-                    <div class="page"><img src="images/50_2x.webp" alt="Page 50"></div>
-                    <div class="page"><img src="images/51_2x.webp" alt="Page 51"></div>
-                    <div class="page"><img src="images/52_2x.webp" alt="Page 52"></div>
-                    <div class="page"><img src="images/53_2x.webp" alt="Page 53"></div>
-                    <div class="page"><img src="images/54_2x.webp" alt="Page 54"></div>
-                    <div class="page"><img src="images/55_2x.webp" alt="Page 55"></div>
-                    <div class="page"><img src="images/56_2x.webp" alt="Page 56"></div>
-                    <div class="page"><img src="images/57_2x.webp" alt="Page 57"></div>
-                    <div class="page"><img src="images/58_2x.webp" alt="Page 58"></div>
-                    <div class="page"><img src="images/59_2x.webp" alt="Page 59"></div>
-                    <div class="page"><img src="images/60_2x.webp" alt="Page 60"></div>
-                    <div class="page"><img src="images/61_2x.webp" alt="Page 61"></div>
-                    <div class="page"><img src="images/62_2x.webp" alt="Page 62"></div>
-                    <div class="page"><img src="images/63_2x.webp" alt="Page 63"></div>
-                    <div class="page"><img src="images/64_2x.webp" alt="Page 64"></div>
-                    <div class="page"><img src="images/65_2x.webp" alt="Page 65"></div>
-                    <div class="page"><img src="images/66_2x.webp" alt="Page 66"></div>
-                    <div class="page"><img src="images/67_2x.webp" alt="Page 67"></div>
-                    <div class="page"><img src="images/68_2x.webp" alt="Page 68"></div>
-                    <div class="page"><img src="images/69_2x.webp" alt="Page 69"></div>
-                    <div class="page"><img src="images/70_2x.webp" alt="Page 70"></div>
-                    <div class="page"><img src="images/71_2x.webp" alt="Page 71"></div>
-                    <div class="page"><img src="images/72_2x.webp" alt="Page 72"></div>
-                    <div class="page"><img src="images/73_2x.webp" alt="Page 73"></div>
-                    <div class="page"><img src="images/74_2x.webp" alt="Page 74"></div>
-                    <div class="page"><img src="images/75_2x.webp" alt="Page 75"></div>
-                    <div class="page"><img src="images/76_2x.webp" alt="Page 76"></div>
-                    <div class="page"><img src="images/77_2x.webp" alt="Page 77"></div>
-                    <div class="page"><img src="images/78_2x.webp" alt="Page 78"></div>
-                    <div class="page"><img src="images/79_2x.webp" alt="Page 79"></div>
-                    <div class="page"><img src="images/80_2x.webp" alt="Page 80"></div>
-                    <div class="page"><img src="images/81_2x.webp" alt="Page 81"></div>
-                    <div class="page"><img src="images/82_2x.webp" alt="Page 82"></div>
-                    <div class="page"><img src="images/83_2x.webp" alt="Page 83"></div>
-                    <div class="page"><img src="images/84_2x.webp" alt="Page 84"></div>
-                    <div class="page"><img src="images/85_2x.webp" alt="Page 85"></div>
-                    <div class="page"><img src="images/86_2x.webp" alt="Page 86"></div>
-                </div>
-            </div>
+    <div id="book-container">
+        <div id="book">
+            <div class="page"><img src="images/1_2x.webp" alt="Page 1"></div>
+            <div class="page"><img src="images/2_2x.webp" alt="Page 2"></div>
+            <div class="page"><img src="images/3_2x.webp" alt="Page 3"></div>
+            <div class="page"><img src="images/4_2x.webp" alt="Page 4"></div>
+            <div class="page"><img src="images/5_2x.webp" alt="Page 5"></div>
+            <div class="page"><img src="images/6_2x.webp" alt="Page 6"></div>
+            <div class="page"><img src="images/7_2x.webp" alt="Page 7"></div>
+            <div class="page"><img src="images/8_2x.webp" alt="Page 8"></div>
+            <div class="page"><img src="images/9_2x.webp" alt="Page 9"></div>
+            <div class="page"><img src="images/10_2x.webp" alt="Page 10"></div>
+            <div class="page"><img src="images/11_2x.webp" alt="Page 11"></div>
+            <div class="page"><img src="images/12_2x.webp" alt="Page 12"></div>
+            <div class="page"><img src="images/13_2x.webp" alt="Page 13"></div>
+            <div class="page"><img src="images/14_2x.webp" alt="Page 14"></div>
+            <div class="page"><img src="images/15_2x.webp" alt="Page 15"></div>
+            <div class="page"><img src="images/16_2x.webp" alt="Page 16"></div>
+            <div class="page"><img src="images/17_2x.webp" alt="Page 17"></div>
+            <div class="page"><img src="images/18_2x.webp" alt="Page 18"></div>
+            <div class="page"><img src="images/19_2x.webp" alt="Page 19"></div>
+            <div class="page"><img src="images/20_2x.webp" alt="Page 20"></div>
+            <div class="page"><img src="images/21_2x.webp" alt="Page 21"></div>
+            <div class="page"><img src="images/22_2x.webp" alt="Page 22"></div>
+            <div class="page"><img src="images/23_2x.webp" alt="Page 23"></div>
+            <div class="page"><img src="images/24_2x.webp" alt="Page 24"></div>
+            <div class="page"><img src="images/25_2x.webp" alt="Page 25"></div>
+            <div class="page"><img src="images/26_2x.webp" alt="Page 26"></div>
+            <div class="page"><img src="images/27_2x.webp" alt="Page 27"></div>
+            <div class="page"><img src="images/28_2x.webp" alt="Page 28"></div>
+            <div class="page"><img src="images/29_2x.webp" alt="Page 29"></div>
+            <div class="page"><img src="images/30_2x.webp" alt="Page 30"></div>
+            <div class="page"><img src="images/31_2x.webp" alt="Page 31"></div>
+            <div class="page"><img src="images/32_2x.webp" alt="Page 32"></div>
+            <div class="page"><img src="images/33_2x.webp" alt="Page 33"></div>
+            <div class="page"><img src="images/34_2x.webp" alt="Page 34"></div>
+            <div class="page"><img src="images/35_2x.webp" alt="Page 35"></div>
+            <div class="page"><img src="images/36_2x.webp" alt="Page 36"></div>
+            <div class="page"><img src="images/37_2x.webp" alt="Page 37"></div>
+            <div class="page"><img src="images/38_2x.webp" alt="Page 38"></div>
+            <div class="page"><img src="images/39_2x.webp" alt="Page 39"></div>
+            <div class="page"><img src="images/40_2x.webp" alt="Page 40"></div>
+            <div class="page"><img src="images/41_2x.webp" alt="Page 41"></div>
+            <div class="page"><img src="images/42_2x.webp" alt="Page 42"></div>
+            <div class="page"><img src="images/43_2x.webp" alt="Page 43"></div>
+            <div class="page"><img src="images/44_2x.webp" alt="Page 44"></div>
+            <div class="page"><img src="images/45_2x.webp" alt="Page 45"></div>
+            <div class="page"><img src="images/46_2x.webp" alt="Page 46"></div>
+            <div class="page"><img src="images/47_2x.webp" alt="Page 47"></div>
+            <div class="page"><img src="images/48_2x.webp" alt="Page 48"></div>
+            <div class="page"><img src="images/49_2x.webp" alt="Page 49"></div>
+            <div class="page"><img src="images/50_2x.webp" alt="Page 50"></div>
+            <div class="page"><img src="images/51_2x.webp" alt="Page 51"></div>
+            <div class="page"><img src="images/52_2x.webp" alt="Page 52"></div>
+            <div class="page"><img src="images/53_2x.webp" alt="Page 53"></div>
+            <div class="page"><img src="images/54_2x.webp" alt="Page 54"></div>
+            <div class="page"><img src="images/55_2x.webp" alt="Page 55"></div>
+            <div class="page"><img src="images/56_2x.webp" alt="Page 56"></div>
+            <div class="page"><img src="images/57_2x.webp" alt="Page 57"></div>
+            <div class="page"><img src="images/58_2x.webp" alt="Page 58"></div>
+            <div class="page"><img src="images/59_2x.webp" alt="Page 59"></div>
+            <div class="page"><img src="images/60_2x.webp" alt="Page 60"></div>
+            <div class="page"><img src="images/61_2x.webp" alt="Page 61"></div>
+            <div class="page"><img src="images/62_2x.webp" alt="Page 62"></div>
+            <div class="page"><img src="images/63_2x.webp" alt="Page 63"></div>
+            <div class="page"><img src="images/64_2x.webp" alt="Page 64"></div>
+            <div class="page"><img src="images/65_2x.webp" alt="Page 65"></div>
+            <div class="page"><img src="images/66_2x.webp" alt="Page 66"></div>
+            <div class="page"><img src="images/67_2x.webp" alt="Page 67"></div>
+            <div class="page"><img src="images/68_2x.webp" alt="Page 68"></div>
+            <div class="page"><img src="images/69_2x.webp" alt="Page 69"></div>
+            <div class="page"><img src="images/70_2x.webp" alt="Page 70"></div>
+            <div class="page"><img src="images/71_2x.webp" alt="Page 71"></div>
+            <div class="page"><img src="images/72_2x.webp" alt="Page 72"></div>
+            <div class="page"><img src="images/73_2x.webp" alt="Page 73"></div>
+            <div class="page"><img src="images/74_2x.webp" alt="Page 74"></div>
+            <div class="page"><img src="images/75_2x.webp" alt="Page 75"></div>
+            <div class="page"><img src="images/76_2x.webp" alt="Page 76"></div>
+            <div class="page"><img src="images/77_2x.webp" alt="Page 77"></div>
+            <div class="page"><img src="images/78_2x.webp" alt="Page 78"></div>
+            <div class="page"><img src="images/79_2x.webp" alt="Page 79"></div>
+            <div class="page"><img src="images/80_2x.webp" alt="Page 80"></div>
+            <div class="page"><img src="images/81_2x.webp" alt="Page 81"></div>
+            <div class="page"><img src="images/82_2x.webp" alt="Page 82"></div>
+            <div class="page"><img src="images/83_2x.webp" alt="Page 83"></div>
+            <div class="page"><img src="images/84_2x.webp" alt="Page 84"></div>
+            <div class="page"><img src="images/85_2x.webp" alt="Page 85"></div>
+            <div class="page"><img src="images/86_2x.webp" alt="Page 86"></div>
         </div>
     </div>
 
@@ -271,15 +251,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             const bookElement = document.getElementById('book');
 
-            // Höjda max-gränser så boken kan sträcka ut sig helt i skärmen
             const pageFlip = new St.PageFlip(bookElement, {
-                width: 550,
-                height: 733,
+                width: 450,
+                height: 640,
                 size: "stretch",
-                minWidth: 300,
-                maxWidth: 1800,
-                minHeight: 400,
-                maxHeight: 1400,
+                minWidth: 250,
+                maxWidth: 800,
+                minHeight: 350,
+                maxHeight: 1000,
                 maxShadowOpacity: 0.4,
                 showCover: true,
                 drawShadow: true,
@@ -291,155 +270,55 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
-            // Custom Cursor
+            // 0. Anpassad muspekare-rörelse & effekter
             const cursor = document.getElementById('custom-cursor');
-            let mouseX = -100, mouseY = -100;
-            let cursorScale = 1;
 
             document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%) scale(${cursorScale})`;
+                cursor.style.left = `${e.clientX}px`;
+                cursor.style.top = `${e.clientY}px`;
             });
 
+            // Låt cirkeln växa lite när man hovrar över knappen eller boken
             const interactiveElements = document.querySelectorAll('#fullscreen-btn, #book-container');
             interactiveElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {
-                    cursorScale = 1.6;
-                    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%) scale(${cursorScale})`;
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
                 });
                 el.addEventListener('mouseleave', () => {
-                    cursorScale = 1;
-                    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%) scale(${cursorScale})`;
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
                 });
             });
 
-            // Musplatta / Trackpad Zoom & Pan Logik
-            const zoomViewport = document.getElementById('zoom-viewport');
-            const zoomContainer = document.getElementById('zoom-container');
-
-            let scale = 1;
-            let panX = 0;
-            let panY = 0;
-            let isCustomScaled = false;
-            let isDragging = false;
-            let startX = 0, startY = 0;
-
-            const MIN_SCALE = 0.5; // Tillåter zoom ut ned till 50%
-            const MAX_SCALE = 6;   // Tillåter zoom in upp till 600%
-
-            function applyTransform(animated = false) {
-                if (animated) {
-                    zoomContainer.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-                } else {
-                    zoomContainer.style.transition = 'none';
-                }
-
-                zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-
-                if (scale > 1.05) {
-                    zoomContainer.style.cursor = isDragging ? 'grabbing' : 'grab';
-                } else {
-                    zoomContainer.style.cursor = 'none';
-                }
-            }
-
-            function resetZoom(animated = true) {
-                scale = 1;
-                panX = 0;
-                panY = 0;
-                isCustomScaled = false;
-                applyTransform(animated);
-            }
-
-            // Händelsehanterare för Pinch-Zoom & Panorering
-            zoomViewport.addEventListener('wheel', (e) => {
-                e.preventDefault();
-
-                const rect = zoomViewport.getBoundingClientRect();
-                const currentMouseX = e.clientX - rect.left - rect.width / 2;
-                const currentMouseY = e.clientY - rect.top - rect.height / 2;
-
-                if (e.ctrlKey) {
-                    // Pinch-zoom
-                    const zoomFactor = Math.exp(-e.deltaY * 0.006);
-                    let newScale = scale * zoomFactor;
-
-                    newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
-
-                    if (newScale !== scale) {
-                        panX = currentMouseX - (currentMouseX - panX) * (newScale / scale);
-                        panY = currentMouseY - (currentMouseY - panY) * (newScale / scale);
-                        scale = newScale;
-                        isCustomScaled = Math.abs(scale - 1) > 0.05;
-
-                        // Snäpp tillbaka exakt till 100% om man är väldigt nära ursprungsläget
-                        if (Math.abs(scale - 1) < 0.02) {
-                            scale = 1;
-                            panX = 0;
-                            panY = 0;
-                            isCustomScaled = false;
-                        }
-
-                        applyTransform(false);
-                    }
-                } else if (isCustomScaled && scale > 1) {
-                    // Panorera med två fingrar när man är inzoomad
-                    panX -= e.deltaX;
-                    panY -= e.deltaY;
-                    applyTransform(false);
-                }
-            }, { passive: false });
-
-            // Dra med musknappen när man är inzoomad
-            zoomContainer.addEventListener('mousedown', (e) => {
-                if (scale <= 1.05) return;
-                isDragging = true;
-                startX = e.clientX - panX;
-                startY = e.clientY - panY;
-                applyTransform(false);
-                e.stopPropagation();
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging || scale <= 1.05) return;
-                panX = e.clientX - startX;
-                panY = e.clientY - startY;
-                applyTransform(false);
-            });
-
-            window.addEventListener('mouseup', () => {
-                if (!isDragging) return;
-                isDragging = false;
-                applyTransform(false);
-            });
-
-            // Stoppa bladvändning när man drag-panorerar i inzoomat läge
-            zoomContainer.addEventListener('pointerdown', (e) => {
-                if (scale > 1.05) {
-                    e.stopPropagation();
-                }
-            }, true);
-
-            // Fullskärmsknapp
+            // 1. Fullskärms-funktionalitet
             const fullscreenBtn = document.getElementById('fullscreen-btn');
+            
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(err => {});
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Kunde inte aktivera fullskärm: ${err.message}`);
+                    });
                 } else {
-                    if (document.exitFullscreen) { document.exitFullscreen(); }
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
                 }
             });
 
             document.addEventListener('fullscreenchange', () => {
-                fullscreenBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Full Screen';
+                if (document.fullscreenElement) {
+                    fullscreenBtn.textContent = 'Exit Fullscreen';
+                } else {
+                    fullscreenBtn.textContent = 'Full Screen';
+                }
             });
 
-            // Ljud vid sidvändning
+            // 2. Funktion för subtilt pappersljud vid sidvändning
             function playPaperSound() {
                 try {
                     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
                     const bufferSize = audioCtx.sampleRate * 0.06;
                     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                     const data = buffer.getChannelData(0);
@@ -448,30 +327,36 @@
                     }
                     const noise = audioCtx.createBufferSource();
                     noise.buffer = buffer;
+
                     const filter = audioCtx.createBiquadFilter();
                     filter.type = 'bandpass';
                     filter.frequency.value = 1400;
                     filter.Q.value = 1.2;
+
                     const gain = audioCtx.createGain();
                     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + 0.06);
+
                     noise.connect(filter);
                     filter.connect(gain);
                     gain.connect(audioCtx.destination);
+
                     noise.start();
-                } catch (e) {}
+                } catch (e) {
+                    // Ignorera om ljud blockeras före interaktion
+                }
             }
 
-            pageFlip.on('flip', () => { playPaperSound(); });
+            pageFlip.on('flip', () => {
+                playPaperSound();
+            });
 
-            // Tangentbordsnavigering
+            // 3. Tangentbordsnavigering (vänster- och högerpilar)
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
                     pageFlip.flipNext();
                 } else if (e.key === 'ArrowLeft') {
                     pageFlip.flipPrev();
-                } else if (e.key === 'Escape' && isCustomScaled) {
-                    resetZoom(true);
                 }
             });
         });
