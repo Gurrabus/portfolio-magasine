@@ -27,6 +27,7 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
+            touch-action: manipulation; /* Förhindrar oavsiktlig webbläsar-zoom vid dubbelklick */
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
@@ -62,13 +63,13 @@
             position: absolute;
             top: 0;
             left: 0;
+            touch-action: manipulation;
         }
 
         #zoom-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
             will-change: transform;
             transform-origin: center center;
         }
@@ -287,7 +288,7 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
-            // Muspekare
+            // Custom Cursor
             const cursor = document.getElementById('custom-cursor');
             let mouseX = -100, mouseY = -100;
             let cursorScale = 1;
@@ -310,56 +311,89 @@
                 });
             });
 
-            // Zoom- och panoreringslogik (Dubbelklick)
+            // Musplatta / Trackpad Zoom & Pan Logik
             const zoomViewport = document.getElementById('zoom-viewport');
             const zoomContainer = document.getElementById('zoom-container');
-            let isZoomed = false;
+
             let scale = 1;
             let panX = 0;
             let panY = 0;
+            let isZoomed = false;
             let isDragging = false;
             let startX = 0, startY = 0;
 
-            // HÄR KAN DU JUSTERA HUR MYCKET DU VILL ZOOMA IN (t.ex. 4.0 = 400% zoom)
-            const TARGET_ZOOM_SCALE = 4.0;
+            const MIN_SCALE = 1;
+            const MAX_SCALE = 10; // Tillåter upp till 1000% zoom
 
-            zoomViewport.addEventListener('dblclick', (e) => {
-                if (!isZoomed) {
-                    isZoomed = true;
-                    scale = TARGET_ZOOM_SCALE;
-
-                    const rect = zoomViewport.getBoundingClientRect();
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const clickX = e.clientX - rect.left;
-                    const clickY = e.clientY - rect.top;
-
-                    panX = (centerX - clickX) * (scale - 1);
-                    panY = (centerY - clickY) * (scale - 1);
-
-                    zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-                    zoomContainer.style.cursor = 'grab';
+            function applyTransform(animated = false) {
+                if (animated) {
+                    zoomContainer.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
                 } else {
-                    resetZoom();
+                    zoomContainer.style.transition = 'none';
                 }
-            });
 
-            function resetZoom() {
-                isZoomed = false;
+                zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+
+                if (scale > 1.05) {
+                    zoomContainer.style.cursor = isDragging ? 'grabbing' : 'grab';
+                } else {
+                    zoomContainer.style.cursor = 'none';
+                }
+            }
+
+            function resetZoom(animated = true) {
                 scale = 1;
                 panX = 0;
                 panY = 0;
-                zoomContainer.style.transform = `translate(0px, 0px) scale(1)`;
-                zoomContainer.style.cursor = 'none';
+                isZoomed = false;
+                applyTransform(animated);
             }
 
-            // Panorera (dra runt) när man är inzoomad
+            // Händelsehanterare för Musplatta (Pinch-to-zoom och Tvåfingers-panorering)
+            zoomViewport.addEventListener('wheel', (e) => {
+                e.preventDefault();
+
+                const rect = zoomViewport.getBoundingClientRect();
+                const currentMouseX = e.clientX - rect.left - rect.width / 2;
+                const currentMouseY = e.clientY - rect.top - rect.height / 2;
+
+                if (e.ctrlKey) {
+                    // Musplatta Pinch-Zoom (eller Ctrl + skrollhjul)
+                    const zoomFactor = Math.exp(-e.deltaY * 0.006);
+                    let newScale = scale * zoomFactor;
+
+                    newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
+
+                    if (newScale !== scale) {
+                        panX = currentMouseX - (currentMouseX - panX) * (newScale / scale);
+                        panY = currentMouseY - (currentMouseY - panY) * (newScale / scale);
+                        scale = newScale;
+                        isZoomed = scale > 1.05;
+
+                        if (scale <= 1.01) {
+                            scale = 1;
+                            panX = 0;
+                            panY = 0;
+                            isZoomed = false;
+                        }
+
+                        applyTransform(false);
+                    }
+                } else if (isZoomed) {
+                    // Panorera med två fingrar på musplattan när man är inzoomad
+                    panX -= e.deltaX;
+                    panY -= e.deltaY;
+                    applyTransform(false);
+                }
+            }, { passive: false });
+
+            // Dra med musknappen för att panorera när inzoomad
             zoomContainer.addEventListener('mousedown', (e) => {
                 if (!isZoomed) return;
                 isDragging = true;
                 startX = e.clientX - panX;
                 startY = e.clientY - panY;
-                zoomContainer.style.cursor = 'grabbing';
+                applyTransform(false);
                 e.stopPropagation();
             });
 
@@ -367,23 +401,23 @@
                 if (!isDragging || !isZoomed) return;
                 panX = e.clientX - startX;
                 panY = e.clientY - startY;
-                zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+                applyTransform(false);
             });
 
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
                 isDragging = false;
-                if (isZoomed) zoomContainer.style.cursor = 'grab';
+                if (isZoomed) applyTransform(false);
             });
 
-            // Förhindra att boken försöker vända blad när man drar för att panorera
+            // Stoppa bladvändning vid inzoomat läge så att man kan panorera ostört
             zoomContainer.addEventListener('pointerdown', (e) => {
                 if (isZoomed) {
                     e.stopPropagation();
                 }
             }, true);
 
-            // Fullskärm
+            // Fullskärmsknapp
             const fullscreenBtn = document.getElementById('fullscreen-btn');
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
@@ -433,7 +467,7 @@
                 } else if (e.key === 'ArrowLeft') {
                     pageFlip.flipPrev();
                 } else if (e.key === 'Escape' && isZoomed) {
-                    resetZoom();
+                    resetZoom(true);
                 }
             });
         });
