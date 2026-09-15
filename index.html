@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Magazine</title>
     <!-- Importerar Inter-typsnittet -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,8 +17,6 @@
         body {
             margin: 0;
             padding: 0;
-            /* Döljer standardmuspekaren till förmån för den egna cirkeln */
-            cursor: none;
             /* Subtil, levande bakgrundsgradient */
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             background-size: 200% 200%;
@@ -30,31 +28,12 @@
             height: 100dvh;
             overflow: hidden;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            /* Förhindrar zoom-gestik och textmarkering */
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         @keyframes bgShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
-        }
-
-        /* Anpassad muspekare (svart cirkel) */
-        #custom-cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 12px;
-            height: 12px;
-            background-color: #111827;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
         }
 
         #book-container {
@@ -110,7 +89,7 @@
             pointer-events: none;
         }
 
-        /* Stilren fullskärms-knapp (endast för datorer) */
+        /* Stilren fullskärms-knapp */
         #fullscreen-btn {
             position: absolute;
             top: 24px;
@@ -123,7 +102,7 @@
             font-size: 13px;
             font-weight: 500;
             color: #374151;
-            cursor: none;
+            cursor: pointer;
             z-index: 10;
             backdrop-filter: blur(6px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -136,27 +115,10 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             color: #111827;
         }
-
-        /* Dölj knappen och återställ pekskärmsinställningar på mobiler (under 768px) */
-        @media (max-width: 768px) {
-            body {
-                cursor: auto;
-            }
-            #custom-cursor {
-                display: none;
-            }
-            #fullscreen-btn {
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Anpassad muspekare -->
-    <div id="custom-cursor"></div>
-
-    <!-- Fullscreen-knapp på engelska -->
     <button id="fullscreen-btn">Full Screen</button>
 
     <div id="book-container">
@@ -253,29 +215,6 @@
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- FÖR HINDRA ALL ZOOM ---
-            // 1. Förhindra dubbelklick-zoom
-            document.addEventListener('dblclick', function (e) {
-                e.preventDefault();
-            }, { passive: false });
-
-            // 2. Förhindra dubbeltryck-zoom på mobil/surfplatta
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function (e) {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    e.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-
-            // 3. Förhindra Ctrl + Scroll / Pinch-zoom på touchpad
-            document.addEventListener('wheel', function (e) {
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
             const bookElement = document.getElementById('book');
 
             const pageFlip = new St.PageFlip(bookElement, {
@@ -297,31 +236,13 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
-            // --- ANPASSAD MUSPEKARE ---
-            const cursor = document.getElementById('custom-cursor');
-
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.left = `${e.clientX}px`;
-                cursor.style.top = `${e.clientY}px`;
-            });
-
-            const interactiveElements = document.querySelectorAll('#fullscreen-btn, #book-container');
-            interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                });
-            });
-
-            // --- FULLSCREEN FUNKTIONALITET (PÅ ENGELSKA) ---
+            // 1. Fullskärms-funktionalitet
             const fullscreenBtn = document.getElementById('fullscreen-btn');
             
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen().catch(err => {
-                        console.error(`Could not enable fullscreen: ${err.message}`);
+                        console.error(`Kunde inte aktivera fullskärm: ${err.message}`);
                     });
                 } else {
                     if (document.exitFullscreen) {
@@ -338,7 +259,7 @@
                 }
             });
 
-            // --- PAPPERSLJUD VID SIDVÄNDNING ---
+            // 2. Funktion för subtilt pappersljud vid sidvändning
             function playPaperSound() {
                 try {
                     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -377,7 +298,7 @@
                 playPaperSound();
             });
 
-            // --- TANGENTBORDSNAVIGERING ---
+            // 3. Tangentbordsnavigering (vänster- och högerpilar)
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
                     pageFlip.flipNext();
