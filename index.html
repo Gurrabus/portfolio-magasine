@@ -17,6 +17,8 @@
         body {
             margin: 0;
             padding: 0;
+            /* Döljer standardmuspekaren på datorer till förmån för den egna cirkeln */
+            cursor: none;
             /* Subtil, levande bakgrundsgradient */
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             background-size: 200% 200%;
@@ -36,6 +38,21 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* Anpassad fylld svart cirkel som muspekare */
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #111827;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+        }
+
         #book-container {
             width: 95vw;
             height: 80vh;
@@ -46,6 +63,7 @@
             /* Förfinad drop-shadow som ger boken ett levande svävande djup */
             filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.12));
             position: relative;
+            cursor: none;
         }
 
         #book {
@@ -102,7 +120,7 @@
             font-size: 13px;
             font-weight: 500;
             color: #374151;
-            cursor: pointer;
+            cursor: none;
             z-index: 10;
             backdrop-filter: blur(6px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -116,8 +134,14 @@
             color: #111827;
         }
 
-        /* Dölj knappen på mobiler och mindre skärmar (under 768px) */
+        /* Dölj knappen och återställ standardpekare på mobiler och mindre skärmar (under 768px) */
         @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+            #custom-cursor {
+                display: none;
+            }
             #fullscreen-btn {
                 display: none;
             }
@@ -125,6 +149,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Anpassad muspekare -->
+    <div id="custom-cursor"></div>
 
     <button id="fullscreen-btn">Full Screen</button>
 
@@ -242,6 +269,25 @@
             });
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
+
+            // 0. Anpassad muspekare-rörelse & effekter
+            const cursor = document.getElementById('custom-cursor');
+
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = `${e.clientX}px`;
+                cursor.style.top = `${e.clientY}px`;
+            });
+
+            // Låt cirkeln växa lite när man hovrar över knappen eller boken
+            const interactiveElements = document.querySelectorAll('#fullscreen-btn, #book-container');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                });
+            });
 
             // 1. Fullskärms-funktionalitet
             const fullscreenBtn = document.getElementById('fullscreen-btn');
