@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- 1. LÅSER ZOOM I VIEWPORT -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Tillåter pinch zoom på mobila enheter -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Magazine</title>
     <!-- Importerar Inter-typsnittet -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,9 +31,6 @@
             height: 100dvh;
             overflow: hidden;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            
-            /* 2. CSS-SPÄRRAR FÖR ZOOM & TEXTMARKERING */
-            touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
         }
@@ -44,7 +41,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 3. ANPASSAD MUSPEKARE (SVART CIRKEL) */
+        /* ANPASSAD MUSPEKARE (SVART CIRKEL) */
         #custom-cursor {
             position: fixed;
             top: 0;
@@ -254,30 +251,6 @@
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            
-            // --- JS-SPÄRRAR FÖR ZOOM ---
-            // A. Stoppa dubbelklick-zoom
-            document.addEventListener('dblclick', function (e) {
-                e.preventDefault();
-            }, { passive: false });
-
-            // B. Stoppa dubbeltryck-zoom på pekskärmar
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function (e) {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    e.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-
-            // C. Stoppa Ctrl + Scroll / Pinch-zoom
-            document.addEventListener('wheel', function (e) {
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
 
             // --- PAGE FLIP INITIALERING ---
             const bookElement = document.getElementById('book');
