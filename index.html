@@ -165,6 +165,7 @@
             right: 28px;
             display: flex;
             align-items: flex-start;
+            gap: 28px;
             z-index: 10000;
         }
 
@@ -254,6 +255,7 @@
             #ui-controls {
                 top: 14px;
                 right: 14px;
+                gap: 18px;
             }
 
             .btn-label {
@@ -282,8 +284,15 @@
 
     <div id="custom-cursor"></div>
     
-    <!-- HÖGERHÖRNSKONTROLL (THEME) -->
+    <!-- HÖGERHÖRNSKONTROLLER (MUSIC & THEME) -->
     <div id="ui-controls">
+        <button id="toggle-music-btn" class="ui-icon-btn" title="Background Music">
+            <span class="btn-label">MUSIC</span>
+            <div class="toggle-track">
+                <div class="toggle-thumb"></div>
+            </div>
+        </button>
+
         <button id="toggle-theme-btn" class="ui-icon-btn" title="Background Theme">
             <span class="btn-label">THEME</span>
             <div class="toggle-track">
@@ -391,6 +400,7 @@
 
             const bookElement = document.getElementById('book');
             const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+            const toggleMusicBtn = document.getElementById('toggle-music-btn');
 
             // Automatisk layout (1 sida på stående mobil, uppslag i övrigt)
             function updateOrientationClass() {
@@ -428,6 +438,53 @@
             toggleThemeBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-theme');
                 toggleThemeBtn.classList.toggle('active');
+            });
+
+            // --- MUSIC (PLAYLIST MED 5 LÅTAR) ---
+            const playlist = [
+                'audio/audio1.mp3',
+                'audio/audio2.mp3',
+                'audio/audio3.mp3',
+                'audio/audio4.mp3',
+                'audio/audio5.mp3'
+            ];
+
+            let currentTrackIndex = 0;
+            const bgAudio = new Audio(playlist[currentTrackIndex]);
+            bgAudio.volume = 0.25; // 25% bakgrundsvolym
+
+            // Byta till nästa låt automatiskt när en tar slut
+            bgAudio.addEventListener('ended', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+                bgAudio.src = playlist[currentTrackIndex];
+                bgAudio.play().catch(err => console.log("Spelningsfel:", err));
+            });
+
+            // Music On/Off knapp
+            toggleMusicBtn.addEventListener('click', () => {
+                if (bgAudio.paused) {
+                    bgAudio.play().then(() => {
+                        toggleMusicBtn.classList.add('active');
+                    }).catch(err => {
+                        console.log("Kunde inte spela musik:", err);
+                    });
+                } else {
+                    bgAudio.pause();
+                    toggleMusicBtn.classList.remove('active');
+                }
+            });
+
+            // --- PAPPERSLJUD (newspaper.mp3) ---
+            const flipAudio = new Audio('audio/newspaper.mp3');
+            flipAudio.volume = 0.4; // 40% volym för bläddringsljudet
+
+            function playPaperSound() {
+                flipAudio.currentTime = 0; // Återställ ljudet så det kan spelas om snabbt
+                flipAudio.play().catch(err => {});
+            }
+
+            pageFlip.on('flip', () => {
+                playPaperSound();
             });
 
             // --- UPPDATERA STORLEK VID RENSNING/SKÄRMÄNDRING ---
@@ -572,43 +629,6 @@
                 el.addEventListener('mouseleave', () => {
                     cursor.style.transform = 'translate(-50%, -50%) scale(1)';
                 });
-            });
-
-            // --- PAPPERSLJUD ---
-            function playPaperSound() {
-                try {
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioCtx.state === 'suspended') {
-                        audioCtx.resume();
-                    }
-                    const bufferSize = audioCtx.sampleRate * 0.06;
-                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
-                    }
-                    const noise = audioCtx.createBufferSource();
-                    noise.buffer = buffer;
-
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'bandpass';
-                    filter.frequency.value = 1400;
-                    filter.Q.value = 1.2;
-
-                    const gain = audioCtx.createGain();
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + 0.06);
-
-                    noise.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(audioCtx.destination);
-
-                    noise.start();
-                } catch (e) {}
-            }
-
-            pageFlip.on('flip', () => {
-                playPaperSound();
             });
 
             // --- TANGENTBORDSNAVIGERING ---
