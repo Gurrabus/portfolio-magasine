@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -74,29 +74,16 @@
         }
 
         #book-container {
+            width: 98vw;
+            height: 92vh;
+            max-width: 1450px;
             display: flex;
             justify-content: center;
             align-items: center;
             filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.12));
             transform-origin: center center;
-            transition: transform 0.05s ease-out, width 0.2s ease, height 0.2s ease;
+            transition: transform 0.05s ease-out;
             touch-action: manipulation;
-        }
-
-        /* STORLEKSSTYRNING: UPPSLAG (2 SIDOR) */
-        body.mode-spread #book-container {
-            height: 85dvh !important;
-            width: calc(85dvh * 1.406) !important;
-            max-width: 94vw !important;
-            max-height: calc(94vw / 1.406) !important;
-        }
-
-        /* STORLEKSSTYRNING: ENSTAKA SIDA (1 SIDA) */
-        body.mode-single #book-container {
-            height: 82dvh !important;
-            width: calc(82dvh * 0.703) !important;
-            max-width: 90vw !important;
-            max-height: calc(90vw / 0.703) !important;
         }
 
         #book {
@@ -112,11 +99,12 @@
             position: relative;
         }
         
+        /* BILDEN TÄCKER NU HELA SIDAN UTAN VITA KANTER */
         .page img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transform: scale(1.01);
+            object-fit: cover; /* Täcker hela sidan utan letterboxing */
+            transform: scale(1.01); /* Liten överlappning för att eliminera glapp i kanterna */
             pointer-events: none;
             display: block;
         }
@@ -142,11 +130,11 @@
             pointer-events: none;
         }
 
-        /* KNAPPAR */
-        .ui-btn {
+        #fullscreen-btn {
             position: fixed;
             top: 24px;
-            background: rgba(255, 255, 255, 0.88);
+            right: 24px;
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(0, 0, 0, 0.08);
             padding: 8px 16px;
             border-radius: 20px;
@@ -155,58 +143,41 @@
             font-weight: 500;
             color: #374151;
             cursor: none;
-            z-index: 10000;
+            z-index: 1000;
             backdrop-filter: blur(6px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             transition: all 0.2s ease;
         }
 
-        .ui-btn:hover {
+        #fullscreen-btn:hover {
             background: #ffffff;
             transform: scale(1.02);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             color: #111827;
         }
 
-        #toggle-mode-btn {
-            right: 140px;
-        }
-
-        #fullscreen-btn {
-            right: 24px;
-        }
-
-        /* MOBILANPASSNING */
         @media (max-width: 768px) {
+            #book-container {
+                width: 95vw;
+                height: 80vh;
+                max-width: 1100px;
+            }
             body {
                 cursor: auto;
             }
             #custom-cursor {
                 display: none;
             }
-
-            /* DÖLJ FULLSKÄRMSKNAPPEN PÅ MOBIL */
             #fullscreen-btn {
-                display: none !important;
-            }
-
-            /* PLACERA VÄXELKNAPPEN LÄNGST UPE TILL HÖGER PÅ MOBIL */
-            #toggle-mode-btn {
-                top: 12px;
-                right: 12px;
-                padding: 7px 14px;
-                font-size: 12px;
-                cursor: pointer;
+                display: none;
             }
         }
     </style>
 </head>
-<body class="mode-spread">
+<body>
 
     <div id="custom-cursor"></div>
-    
-    <button id="toggle-mode-btn" class="ui-btn">Visa 1 sida</button>
-    <button id="fullscreen-btn" class="ui-btn">Full Screen</button>
+    <button id="fullscreen-btn">Full Screen</button>
 
     <div id="book-wrapper">
         <div id="book-container">
@@ -305,28 +276,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
+            // --- PAGE FLIP INITIALERING ---
             const bookElement = document.getElementById('book');
-            const toggleModeBtn = document.getElementById('toggle-mode-btn');
-
-            // Sätt startläge beroende på om skärmen är stående eller liggande vid start
-            const isMobilePortrait = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
-            if (isMobilePortrait) {
-                document.body.classList.remove('mode-spread');
-                document.body.classList.add('mode-single');
-                toggleModeBtn.textContent = 'Visa uppslag';
-            } else {
-                document.body.classList.remove('mode-single');
-                document.body.classList.add('mode-spread');
-                toggleModeBtn.textContent = 'Visa 1 sida';
-            }
 
             const pageFlip = new St.PageFlip(bookElement, {
                 width: 450,
                 height: 640,
                 size: "stretch",
-                minWidth: 100,
+                minWidth: 250,
                 maxWidth: 1000,
-                minHeight: 140,
+                minHeight: 350,
                 maxHeight: 1400,
                 maxShadowOpacity: 0.4,
                 showCover: true,
@@ -338,31 +297,6 @@
             });
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
-
-
-            // --- LOGIK FÖR KNAPPEN "VISA 1 SIDA / VISA UPPSLAG" ---
-            toggleModeBtn.addEventListener('click', () => {
-                if (document.body.classList.contains('mode-spread')) {
-                    document.body.classList.remove('mode-spread');
-                    document.body.classList.add('mode-single');
-                    toggleModeBtn.textContent = 'Visa uppslag';
-                } else {
-                    document.body.classList.remove('mode-single');
-                    document.body.classList.add('mode-spread');
-                    toggleModeBtn.textContent = 'Visa 1 sida';
-                }
-                refreshLayout();
-            });
-
-
-            // --- UPPDATERA STORLEK VID RENSNING/SKÄRMÄNDRING ---
-            function refreshLayout() {
-                setTimeout(() => {
-                    if (pageFlip) pageFlip.update();
-                }, 100);
-            }
-            window.addEventListener('resize', refreshLayout);
-            window.addEventListener('orientationchange', refreshLayout);
 
 
             // --- SCROLL- OCH PINCH-ZOOM LOGIK ---
@@ -385,6 +319,7 @@
                 bookContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
             }
 
+            // Scrollhjul-zoom
             wrapper.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
@@ -401,6 +336,7 @@
                 }
             }, { passive: false });
 
+            // Touch-hantering
             wrapper.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     touchStartTime = Date.now();
@@ -482,7 +418,7 @@
             }, { capture: true });
 
 
-            // --- MUSPEKARE (ENDAST DATOR) ---
+            // --- MUSPEKARE ---
             const cursor = document.getElementById('custom-cursor');
 
             document.addEventListener('mousemove', (e) => {
@@ -490,7 +426,7 @@
                 cursor.style.top = `${e.clientY}px`;
             });
 
-            const interactiveElements = document.querySelectorAll('.ui-btn, #book-container');
+            const interactiveElements = document.querySelectorAll('#fullscreen-btn, #book-container');
             interactiveElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
@@ -501,15 +437,26 @@
             });
 
 
-            // --- FULLSKÄRMS-LOGIK (ENDAST DATOR/TABLET) ---
+            // --- FULLSCREEN-KNAPP ---
             const fullscreenBtn = document.getElementById('fullscreen-btn');
-
+            
             fullscreenBtn.addEventListener('click', () => {
-                const docEl = document.documentElement;
                 if (!document.fullscreenElement) {
-                    if (docEl.requestFullscreen) docEl.requestFullscreen();
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Could not enable fullscreen: ${err.message}`);
+                    });
                 } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenBtn.textContent = 'Exit Fullscreen';
+                } else {
+                    fullscreenBtn.textContent = 'Full Screen';
                 }
             });
 
