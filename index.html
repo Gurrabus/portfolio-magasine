@@ -451,7 +451,6 @@
                 'audio/audio5.mp3'
             ];
 
-            // Slumpa ett startindex mellan 0 och 4
             let currentTrackIndex = Math.floor(Math.random() * playlist.length);
             const bgAudio = new Audio(playlist[currentTrackIndex]);
             bgAudio.volume = 0.25;
@@ -464,7 +463,6 @@
 
             toggleMusicBtn.addEventListener('click', () => {
                 if (bgAudio.paused) {
-                    // Om man sätter på musiken på nytt, slumpa en NY startlåt varje gång det spelas upp!
                     currentTrackIndex = Math.floor(Math.random() * playlist.length);
                     bgAudio.src = playlist[currentTrackIndex];
 
@@ -479,13 +477,15 @@
                 }
             });
 
-            // --- PAPPERSLJUD (newspaper.mp3) ---
+            // --- PAPPERSLJUD (newspaper.mp3) MED KLONING FÖR SNABB FÖLJD ---
             const flipAudio = new Audio('audio/newspaper.mp3');
             flipAudio.volume = 0.4;
+            flipAudio.preload = 'auto';
 
             pageFlip.on('flip', () => {
-                flipAudio.currentTime = 0;
-                flipAudio.play().catch(err => {});
+                const soundClone = flipAudio.cloneNode();
+                soundClone.volume = 0.4;
+                soundClone.play().catch(err => {});
             });
 
             // --- UPPDATERA STORLEK VID ÄNDRING ---
