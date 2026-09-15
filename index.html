@@ -165,7 +165,6 @@
             right: 28px;
             display: flex;
             align-items: flex-start;
-            gap: 28px;
             z-index: 10000;
         }
 
@@ -252,15 +251,9 @@
                 cursor: pointer;
             }
 
-            /* DÖLJ FULLSKÄRMSKNAPPEN PÅ MOBIL */
-            #fullscreen-btn {
-                display: none !important;
-            }
-
             #ui-controls {
                 top: 14px;
                 right: 14px;
-                gap: 18px;
             }
 
             .btn-label {
@@ -289,15 +282,8 @@
 
     <div id="custom-cursor"></div>
     
-    <!-- HÖGKERHÖRNSKONTROLLER (FULL SCREEN & THEME) -->
+    <!-- HÖGERHÖRNSKONTROLL (THEME) -->
     <div id="ui-controls">
-        <button id="fullscreen-btn" class="ui-icon-btn" title="Full Screen">
-            <span class="btn-label">FULL<br>SCREEN</span>
-            <div class="toggle-track">
-                <div class="toggle-thumb"></div>
-            </div>
-        </button>
-
         <button id="toggle-theme-btn" class="ui-icon-btn" title="Background Theme">
             <span class="btn-label">THEME</span>
             <div class="toggle-track">
@@ -375,7 +361,7 @@
                 <div class="page"><img src="images/64_2x.webp" alt="Page 64"></div>
                 <div class="page"><img src="images/65_2x.webp" alt="Page 65"></div>
                 <div class="page"><img src="images/66_2x.webp" alt="Page 66"></div>
-                <div class="page"><img src="images/67_2x.webp" alt="Page 7"></div>
+                <div class="page"><img src="images/67_2x.webp" alt="Page 67"></div>
                 <div class="page"><img src="images/68_2x.webp" alt="Page 68"></div>
                 <div class="page"><img src="images/69_2x.webp" alt="Page 69"></div>
                 <div class="page"><img src="images/70_2x.webp" alt="Page 70"></div>
@@ -405,7 +391,6 @@
 
             const bookElement = document.getElementById('book');
             const toggleThemeBtn = document.getElementById('toggle-theme-btn');
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
 
             // Automatisk layout (1 sida på stående mobil, uppslag i övrigt)
             function updateOrientationClass() {
@@ -443,27 +428,6 @@
             toggleThemeBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-theme');
                 toggleThemeBtn.classList.toggle('active');
-            });
-
-            // --- FULL SCREEN ---
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
-                }
-            });
-
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    fullscreenBtn.classList.add('active');
-                } else {
-                    fullscreenBtn.classList.remove('active');
-                }
             });
 
             // --- UPPDATERA STORLEK VID RENSNING/SKÄRMÄNDRING ---
