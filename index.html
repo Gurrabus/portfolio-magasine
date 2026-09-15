@@ -107,7 +107,7 @@
             max-height: calc(94vw / 1.406) !important;
         }
 
-        /* STORLEKSSTYRNING: ENSTAKA SIDA (1 SIDA) */
+        /* STORLEKSSTYRNING: ENSTAKA SIDA (1 SIDA PÅ MOBIL STÅENDE) */
         body.mode-single #book-container {
             height: 82dvh !important;
             width: calc(82dvh * 0.703) !important;
@@ -234,35 +234,9 @@
             background-color: #ffffff;
         }
 
-        /* AKTIVT LÄGE FÖR TOGGLE (CIRKELN GLIDER NER) */
+        /* AKTIVT LÄGE (CIRKELN GLIDER NER) */
         .ui-icon-btn.active .toggle-thumb {
             transform: translateY(20px);
-        }
-
-        /* NEDLADDNINGSKNAPP (ENKEL CIRKEL) */
-        .btn-dot-wrapper {
-            width: 18px;
-            height: 38px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 1px;
-        }
-
-        .btn-dot {
-            width: 14px;
-            height: 14px;
-            background-color: #000000;
-            border-radius: 50%;
-            transition: transform 0.15s ease, background-color 0.3s ease;
-        }
-
-        body.dark-theme .btn-dot {
-            background-color: #ffffff;
-        }
-
-        .ui-icon-btn:active .btn-dot {
-            transform: scale(0.85);
         }
 
         /* MOBILANPASSNING */
@@ -308,11 +282,6 @@
             .ui-icon-btn.active .toggle-thumb {
                 transform: translateY(18px);
             }
-
-            .btn-dot {
-                width: 12px;
-                height: 12px;
-            }
         }
     </style>
 </head>
@@ -320,17 +289,10 @@
 
     <div id="custom-cursor"></div>
     
-    <!-- HÖGKERHÖRNSKONTROLLER MED DIN DESIGN -->
+    <!-- HÖGKERHÖRNSKONTROLLER (FULL SCREEN & THEME) -->
     <div id="ui-controls">
         <button id="fullscreen-btn" class="ui-icon-btn" title="Full Screen">
             <span class="btn-label">FULL<br>SCREEN</span>
-            <div class="toggle-track">
-                <div class="toggle-thumb"></div>
-            </div>
-        </button>
-
-        <button id="toggle-mode-btn" class="ui-icon-btn" title="Toggle Mode">
-            <span class="btn-label">MODE</span>
             <div class="toggle-track">
                 <div class="toggle-thumb"></div>
             </div>
@@ -342,13 +304,6 @@
                 <div class="toggle-thumb"></div>
             </div>
         </button>
-
-        <a href="portfolio.pdf" download="portfolio.pdf" id="download-btn" class="ui-icon-btn" title="Download PDF">
-            <span class="btn-label">DOWNLOAD</span>
-            <div class="btn-dot-wrapper">
-                <div class="btn-dot"></div>
-            </div>
-        </a>
     </div>
 
     <div id="book-wrapper">
@@ -420,7 +375,7 @@
                 <div class="page"><img src="images/64_2x.webp" alt="Page 64"></div>
                 <div class="page"><img src="images/65_2x.webp" alt="Page 65"></div>
                 <div class="page"><img src="images/66_2x.webp" alt="Page 66"></div>
-                <div class="page"><img src="images/67_2x.webp" alt="Page 67"></div>
+                <div class="page"><img src="images/67_2x.webp" alt="Page 7"></div>
                 <div class="page"><img src="images/68_2x.webp" alt="Page 68"></div>
                 <div class="page"><img src="images/69_2x.webp" alt="Page 69"></div>
                 <div class="page"><img src="images/70_2x.webp" alt="Page 70"></div>
@@ -449,21 +404,21 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             const bookElement = document.getElementById('book');
-            const toggleModeBtn = document.getElementById('toggle-mode-btn');
             const toggleThemeBtn = document.getElementById('toggle-theme-btn');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
 
-            // Startläge baserat på stående vs liggande skärm
-            const isMobilePortrait = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
-            if (isMobilePortrait) {
-                document.body.classList.remove('mode-spread');
-                document.body.classList.add('mode-single');
-                toggleModeBtn.classList.add('active');
-            } else {
-                document.body.classList.remove('mode-single');
-                document.body.classList.add('mode-spread');
-                toggleModeBtn.classList.remove('active');
+            // Automatisk layout (1 sida på stående mobil, uppslag i övrigt)
+            function updateOrientationClass() {
+                const isMobilePortrait = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+                if (isMobilePortrait) {
+                    document.body.classList.remove('mode-spread');
+                    document.body.classList.add('mode-single');
+                } else {
+                    document.body.classList.remove('mode-single');
+                    document.body.classList.add('mode-spread');
+                }
             }
+            updateOrientationClass();
 
             const pageFlip = new St.PageFlip(bookElement, {
                 width: 450,
@@ -484,27 +439,13 @@
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
 
-            // --- KNAPP 1: MODE (1 SIDA / UPPSLAG) ---
-            toggleModeBtn.addEventListener('click', () => {
-                if (document.body.classList.contains('mode-spread')) {
-                    document.body.classList.remove('mode-spread');
-                    document.body.classList.add('mode-single');
-                    toggleModeBtn.classList.add('active');
-                } else {
-                    document.body.classList.remove('mode-single');
-                    document.body.classList.add('mode-spread');
-                    toggleModeBtn.classList.remove('active');
-                }
-                refreshLayout();
-            });
-
-            // --- KNAPP 2: THEME (LIGHT / DARK BACKGROUND) ---
+            // --- THEME (LIGHT / DARK BACKGROUND) ---
             toggleThemeBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-theme');
                 toggleThemeBtn.classList.toggle('active');
             });
 
-            // --- KNAPP 3: FULL SCREEN ---
+            // --- FULL SCREEN ---
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
                     if (document.documentElement.requestFullscreen) {
@@ -527,6 +468,7 @@
 
             // --- UPPDATERA STORLEK VID RENSNING/SKÄRMÄNDRING ---
             function refreshLayout() {
+                updateOrientationClass();
                 setTimeout(() => {
                     if (pageFlip) pageFlip.update();
                 }, 100);
