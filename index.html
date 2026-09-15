@@ -89,7 +89,7 @@
             pointer-events: none;
         }
 
-        /* Stilren fullskärms-knapp */
+        /* Stilren fullskärms-knapp (endast för datorer) */
         #fullscreen-btn {
             position: absolute;
             top: 24px;
@@ -114,6 +114,13 @@
             transform: scale(1.02);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             color: #111827;
+        }
+
+        /* Dölj knappen på mobiler och mindre skärmar (under 768px) */
+        @media (max-width: 768px) {
+            #fullscreen-btn {
+                display: none;
+            }
         }
     </style>
 </head>
