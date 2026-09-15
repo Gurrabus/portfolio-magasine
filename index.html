@@ -442,7 +442,7 @@
                 toggleThemeBtn.classList.toggle('active');
             });
 
-            // --- MUSIC (SPELLISTA MED 5 LÅTAR) ---
+            // --- MUSIC (SLUMPAD SPELLISTA MED 5 LÅTAR) ---
             const playlist = [
                 'audio/audio1.mp3',
                 'audio/audio2.mp3',
@@ -451,7 +451,8 @@
                 'audio/audio5.mp3'
             ];
 
-            let currentTrackIndex = 0;
+            // Slumpa ett startindex mellan 0 och 4
+            let currentTrackIndex = Math.floor(Math.random() * playlist.length);
             const bgAudio = new Audio(playlist[currentTrackIndex]);
             bgAudio.volume = 0.25;
 
@@ -463,6 +464,10 @@
 
             toggleMusicBtn.addEventListener('click', () => {
                 if (bgAudio.paused) {
+                    // Om man sätter på musiken på nytt, slumpa en NY startlåt varje gång det spelas upp!
+                    currentTrackIndex = Math.floor(Math.random() * playlist.length);
+                    bgAudio.src = playlist[currentTrackIndex];
+
                     bgAudio.play().then(() => {
                         toggleMusicBtn.classList.add('active');
                     }).catch(err => {
