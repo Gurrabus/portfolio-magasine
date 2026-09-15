@@ -477,15 +477,17 @@
                 }
             });
 
-            // --- PAPPERSLJUD (newspaper.mp3) MED KLONING FÖR SNABB FÖLJD ---
+            // --- PAPPERSLJUD (Endast på dator/större skärmar för att undvika mobiltrubbel) ---
             const flipAudio = new Audio('audio/newspaper.mp3');
-            flipAudio.volume = 0.2;
+            flipAudio.volume = 0.4;
             flipAudio.preload = 'auto';
 
             pageFlip.on('flip', () => {
-                const soundClone = flipAudio.cloneNode();
-                soundClone.volume = 0.4;
-                soundClone.play().catch(err => {});
+                if (!isMobile()) {
+                    const soundClone = flipAudio.cloneNode();
+                    soundClone.volume = 0.4;
+                    soundClone.play().catch(err => {});
+                }
             });
 
             // --- UPPDATERA STORLEK VID ÄNDRING ---
