@@ -27,7 +27,7 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            touch-action: manipulation; /* Förhindrar oavsiktlig webbläsar-zoom vid dubbelklick */
+            touch-action: manipulation;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
@@ -75,9 +75,9 @@
         }
 
         #book-container {
-            width: 95vw;
-            height: 80vh;
-            max-width: 1100px;
+            width: 90vw;
+            height: 85vh;
+            max-width: 1600px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -85,6 +85,8 @@
         }
 
         #book {
+            width: 100%;
+            height: 100%;
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.1),
                 inset 0 0 0 1px rgba(0, 0, 0, 0.05),
@@ -269,14 +271,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             const bookElement = document.getElementById('book');
 
+            // Höjda max-gränser så boken kan sträcka ut sig helt i skärmen
             const pageFlip = new St.PageFlip(bookElement, {
-                width: 450,
-                height: 640,
+                width: 550,
+                height: 733,
                 size: "stretch",
-                minWidth: 250,
-                maxWidth: 800,
-                minHeight: 350,
-                maxHeight: 1000,
+                minWidth: 300,
+                maxWidth: 1800,
+                minHeight: 400,
+                maxHeight: 1400,
                 maxShadowOpacity: 0.4,
                 showCover: true,
                 drawShadow: true,
@@ -318,12 +321,12 @@
             let scale = 1;
             let panX = 0;
             let panY = 0;
-            let isZoomed = false;
+            let isCustomScaled = false;
             let isDragging = false;
             let startX = 0, startY = 0;
 
-            const MIN_SCALE = 1;
-            const MAX_SCALE = 10; // Tillåter upp till 1000% zoom
+            const MIN_SCALE = 0.5; // Tillåter zoom ut ned till 50%
+            const MAX_SCALE = 6;   // Tillåter zoom in upp till 600%
 
             function applyTransform(animated = false) {
                 if (animated) {
@@ -345,11 +348,11 @@
                 scale = 1;
                 panX = 0;
                 panY = 0;
-                isZoomed = false;
+                isCustomScaled = false;
                 applyTransform(animated);
             }
 
-            // Händelsehanterare för Musplatta (Pinch-to-zoom och Tvåfingers-panorering)
+            // Händelsehanterare för Pinch-Zoom & Panorering
             zoomViewport.addEventListener('wheel', (e) => {
                 e.preventDefault();
 
@@ -358,7 +361,7 @@
                 const currentMouseY = e.clientY - rect.top - rect.height / 2;
 
                 if (e.ctrlKey) {
-                    // Musplatta Pinch-Zoom (eller Ctrl + skrollhjul)
+                    // Pinch-zoom
                     const zoomFactor = Math.exp(-e.deltaY * 0.006);
                     let newScale = scale * zoomFactor;
 
@@ -368,28 +371,29 @@
                         panX = currentMouseX - (currentMouseX - panX) * (newScale / scale);
                         panY = currentMouseY - (currentMouseY - panY) * (newScale / scale);
                         scale = newScale;
-                        isZoomed = scale > 1.05;
+                        isCustomScaled = Math.abs(scale - 1) > 0.05;
 
-                        if (scale <= 1.01) {
+                        // Snäpp tillbaka exakt till 100% om man är väldigt nära ursprungsläget
+                        if (Math.abs(scale - 1) < 0.02) {
                             scale = 1;
                             panX = 0;
                             panY = 0;
-                            isZoomed = false;
+                            isCustomScaled = false;
                         }
 
                         applyTransform(false);
                     }
-                } else if (isZoomed) {
-                    // Panorera med två fingrar på musplattan när man är inzoomad
+                } else if (isCustomScaled && scale > 1) {
+                    // Panorera med två fingrar när man är inzoomad
                     panX -= e.deltaX;
                     panY -= e.deltaY;
                     applyTransform(false);
                 }
             }, { passive: false });
 
-            // Dra med musknappen för att panorera när inzoomad
+            // Dra med musknappen när man är inzoomad
             zoomContainer.addEventListener('mousedown', (e) => {
-                if (!isZoomed) return;
+                if (scale <= 1.05) return;
                 isDragging = true;
                 startX = e.clientX - panX;
                 startY = e.clientY - panY;
@@ -398,7 +402,7 @@
             });
 
             window.addEventListener('mousemove', (e) => {
-                if (!isDragging || !isZoomed) return;
+                if (!isDragging || scale <= 1.05) return;
                 panX = e.clientX - startX;
                 panY = e.clientY - startY;
                 applyTransform(false);
@@ -407,12 +411,12 @@
             window.addEventListener('mouseup', () => {
                 if (!isDragging) return;
                 isDragging = false;
-                if (isZoomed) applyTransform(false);
+                applyTransform(false);
             });
 
-            // Stoppa bladvändning vid inzoomat läge så att man kan panorera ostört
+            // Stoppa bladvändning när man drag-panorerar i inzoomat läge
             zoomContainer.addEventListener('pointerdown', (e) => {
-                if (isZoomed) {
+                if (scale > 1.05) {
                     e.stopPropagation();
                 }
             }, true);
@@ -466,7 +470,7 @@
                     pageFlip.flipNext();
                 } else if (e.key === 'ArrowLeft') {
                     pageFlip.flipPrev();
-                } else if (e.key === 'Escape' && isZoomed) {
+                } else if (e.key === 'Escape' && isCustomScaled) {
                     resetZoom(true);
                 }
             });
