@@ -36,7 +36,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Optimerad muspekare som använder transform3d för maxad prestanda */
+        /* Custom cursor */
         #custom-cursor {
             position: fixed;
             top: 0;
@@ -320,10 +320,13 @@
             let isDragging = false;
             let startX = 0, startY = 0;
 
+            // HÄR KAN DU JUSTERA HUR MYCKET DU VILL ZOOMA IN (t.ex. 4.0 = 400% zoom)
+            const TARGET_ZOOM_SCALE = 4.0;
+
             zoomViewport.addEventListener('dblclick', (e) => {
                 if (!isZoomed) {
                     isZoomed = true;
-                    scale = 2.2; // 2.2x zoom
+                    scale = TARGET_ZOOM_SCALE;
 
                     const rect = zoomViewport.getBoundingClientRect();
                     const centerX = rect.width / 2;
