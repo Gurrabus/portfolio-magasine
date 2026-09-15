@@ -133,7 +133,7 @@
             position: fixed;
             top: 24px;
             right: 24px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             border: 1px solid rgba(0, 0, 0, 0.08);
             padding: 8px 16px;
             border-radius: 20px;
@@ -142,7 +142,7 @@
             font-weight: 500;
             color: #374151;
             cursor: none;
-            z-index: 1000;
+            z-index: 10000;
             backdrop-filter: blur(6px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             transition: all 0.2s ease;
@@ -155,7 +155,7 @@
             color: #111827;
         }
 
-        /* ANPASSNING FÖR MOBIL (STÅENDE & ANPASSAD FULLSCREEN-KNAPP) */
+        /* MOBIL - STÅENDE LÄGE */
         @media (max-width: 768px) {
             #book-container {
                 width: 95vw;
@@ -177,20 +177,38 @@
             }
         }
 
-        /* ANPASSNING FÖR MOBIL I LIGGANDE LÄGE (LANDSCAPE) */
-        @media (max-height: 500px) and (orientation: landscape) {
+        /* MOBIL - LIGGANDE LÄGE (UPPSLAG OCH PERFEKT SKÄRMANPASSNING) */
+        @media (max-height: 600px) and (orientation: landscape) {
             #book-container {
-                height: 94dvh;
-                width: calc(94dvh * 1.406); /* Exakt 2-sidors magasin-proportioner */
-                max-width: 96vw;
+                height: 85dvh !important;
+                width: calc(85dvh * 1.406) !important;
+                max-width: 92vw !important;
             }
             #fullscreen-btn {
                 top: 8px;
                 right: 8px;
-                padding: 5px 10px;
-                font-size: 10px;
-                background: rgba(255, 255, 255, 0.9);
+                padding: 6px 12px;
+                font-size: 11px;
+                background: rgba(255, 255, 255, 0.95);
+                cursor: pointer;
             }
+        }
+
+        /* PSEUDO-FULLSKÄRM FALLBACK FÖR IPHONE/SAFARI */
+        body.pseudo-fullscreen #book-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            z-index: 99999;
+            background: #e5e7eb;
+        }
+
+        body.pseudo-fullscreen #book-container {
+            height: 94dvh !important;
+            width: calc(94dvh * 1.406) !important;
+            max-width: 96vw !important;
         }
     </style>
 </head>
@@ -303,9 +321,9 @@
                 width: 450,
                 height: 640,
                 size: "stretch",
-                minWidth: 250,
+                minWidth: 100,  /* Sänkt för att tillåta uppslag på små liggande mobilskärmar */
                 maxWidth: 1000,
-                minHeight: 350,
+                minHeight: 140, /* Sänkt för att förhindra avklipp på höjden */
                 maxHeight: 1400,
                 maxShadowOpacity: 0.4,
                 showCover: true,
@@ -317,6 +335,16 @@
             });
 
             pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
+
+
+            // --- UPPDATERA STORLEK VID VRIDNING AV TELEFONEN ---
+            function refreshLayout() {
+                setTimeout(() => {
+                    if (pageFlip) pageFlip.update();
+                }, 150);
+            }
+            window.addEventListener('resize', refreshLayout);
+            window.addEventListener('orientationchange', refreshLayout);
 
 
             // --- SCROLL- OCH PINCH-ZOOM LOGIK ---
@@ -457,27 +485,41 @@
             });
 
 
-            // --- FULLSCREEN-KNAPP MED CROSS-BROWSER MOBILSTÖD ---
+            // --- FULLSKÄRMS-LOGIK ( MED IPHONE / SAFARI FALLBACK ) ---
             const fullscreenBtn = document.getElementById('fullscreen-btn');
-            
+            let isPseudoFullscreen = false;
+
             fullscreenBtn.addEventListener('click', () => {
                 const docEl = document.documentElement;
-                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                    if (docEl.requestFullscreen) {
-                        docEl.requestFullscreen().catch(err => {
-                            console.error(`Could not enable fullscreen: ${err.message}`);
+                const hasNativeSupport = docEl.requestFullscreen || docEl.webkitRequestFullscreen;
+
+                if (hasNativeSupport) {
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen;
+                        req.call(docEl).then(() => {
+                            refreshLayout();
+                        }).catch(() => {
+                            // Om t.ex. iPhone nekar native fullskärm -> Använd pseudo-fullskärm
+                            togglePseudoFullscreen();
                         });
-                    } else if (docEl.webkitRequestFullscreen) { /* Mobil Safari / WebKit fallback */
-                        docEl.webkitRequestFullscreen();
+                    } else {
+                        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                        if (exit) {
+                            exit.call(document).then(refreshLayout);
+                        }
                     }
                 } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    }
+                    // För enheter utan native Fullscreen API (iPhone Safari)
+                    togglePseudoFullscreen();
                 }
             });
+
+            function togglePseudoFullscreen() {
+                isPseudoFullscreen = !isPseudoFullscreen;
+                document.body.classList.toggle('pseudo-fullscreen', isPseudoFullscreen);
+                fullscreenBtn.textContent = isPseudoFullscreen ? 'Exit Fullscreen' : 'Full Screen';
+                refreshLayout();
+            }
 
             const handleFullscreenChange = () => {
                 if (document.fullscreenElement || document.webkitFullscreenElement) {
@@ -485,6 +527,7 @@
                 } else {
                     fullscreenBtn.textContent = 'Full Screen';
                 }
+                refreshLayout();
             };
 
             document.addEventListener('fullscreenchange', handleFullscreenChange);
